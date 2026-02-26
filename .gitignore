@@ -1,0 +1,25 @@
+# ===== Python cache =====
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# ===== Local env / IDE =====
+.venv/
+.vscode/
+.idea/
+
+# ===== Generated artifacts (do NOT commit) =====
+runs/
+out_*/
+*/out_phaseB/
+*/out_phaseB_suite/
+*/plots_dashboards_B/
+*/Viz/
+
+# Optional: generic plots/logs
+plots_*/
+*.png
+*.pdf
+*.log
