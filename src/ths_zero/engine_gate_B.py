@@ -209,6 +209,7 @@ def apply_engine_supervisor_B(
 
     # min combust OFF: keep combust OFF until min satisfied unless override triggers
     if prev_combust == 0 and combust_off_timer < (params.min_combust_off_s - 1e-9):
+        gate_state["dbg_min_off_hits"] = int(gate_state.get("dbg_min_off_hits", 0)) + 1
         allow_relight = False
 
         # conservative SOC override: require deeper low SOC and dwell
@@ -218,8 +219,15 @@ def apply_engine_supervisor_B(
         else:
             soc_low_timer = 0.0
 
-        if (P_req > params.override_start_power_W) or (soc_low_timer >= params.soc_low_dwell_s):
+        power_override = (P_req > params.override_start_power_W)
+        soc_override = (soc_low_timer >= params.soc_low_dwell_s)
+        if power_override or soc_override:
             allow_relight = True
+            gate_state["dbg_overridden"] = int(gate_state.get("dbg_overridden", 0)) + 1
+            if power_override:
+                gate_state["dbg_by_power"] = int(gate_state.get("dbg_by_power", 0)) + 1
+            if soc_override:
+                gate_state["dbg_by_soc"] = int(gate_state.get("dbg_by_soc", 0)) + 1
     else:
         # still update soc_low_timer for logging / continuity
         soc_low = (soc == soc) and (soc < (soc_target - params.soc_low_override_mult * soc_band))
