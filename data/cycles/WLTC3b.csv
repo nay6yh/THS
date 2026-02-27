@@ -1,0 +1,1802 @@
+Phase,Total_time_s,Speed_kmh
+Low3,0,0
+Low3,1,0
+Low3,2,0
+Low3,3,0
+Low3,4,0
+Low3,5,0
+Low3,6,0
+Low3,7,0
+Low3,8,0
+Low3,9,0
+Low3,10,0
+Low3,11,0
+Low3,12,0.2
+Low3,13,1.7
+Low3,14,5.4
+Low3,15,9.9
+Low3,16,13.1
+Low3,17,16.9
+Low3,18,21.7
+Low3,19,26
+Low3,20,27.5
+Low3,21,28.1
+Low3,22,28.3
+Low3,23,28.8
+Low3,24,29.1
+Low3,25,30.8
+Low3,26,31.9
+Low3,27,34.1
+Low3,28,36.6
+Low3,29,39.1
+Low3,30,41.3
+Low3,31,42.5
+Low3,32,43.3
+Low3,33,43.9
+Low3,34,44.4
+Low3,35,44.5
+Low3,36,44.2
+Low3,37,42.7
+Low3,38,39.9
+Low3,39,37
+Low3,40,34.6
+Low3,41,32.3
+Low3,42,29
+Low3,43,25.1
+Low3,44,22.2
+Low3,45,20.9
+Low3,46,20.4
+Low3,47,19.5
+Low3,48,18.4
+Low3,49,17.8
+Low3,50,17.8
+Low3,51,17.4
+Low3,52,15.7
+Low3,53,13.1
+Low3,54,12.1
+Low3,55,12
+Low3,56,12
+Low3,57,12
+Low3,58,12.3
+Low3,59,12.6
+Low3,60,14.7
+Low3,61,15.3
+Low3,62,15.9
+Low3,63,16.2
+Low3,64,17.1
+Low3,65,17.8
+Low3,66,18.1
+Low3,67,18.4
+Low3,68,20.3
+Low3,69,23.2
+Low3,70,26.5
+Low3,71,29.8
+Low3,72,32.6
+Low3,73,34.4
+Low3,74,35.5
+Low3,75,36.4
+Low3,76,37.4
+Low3,77,38.5
+Low3,78,39.3
+Low3,79,39.5
+Low3,80,39
+Low3,81,38.5
+Low3,82,37.3
+Low3,83,37
+Low3,84,36.7
+Low3,85,35.9
+Low3,86,35.3
+Low3,87,34.6
+Low3,88,34.2
+Low3,89,31.9
+Low3,90,27.3
+Low3,91,22
+Low3,92,17
+Low3,93,14.2
+Low3,94,12
+Low3,95,9.1
+Low3,96,5.8
+Low3,97,3.6
+Low3,98,2.2
+Low3,99,0
+Low3,100,0
+Low3,101,0
+Low3,102,0
+Low3,103,0
+Low3,104,0
+Low3,105,0
+Low3,106,0
+Low3,107,0
+Low3,108,0
+Low3,109,0
+Low3,110,0
+Low3,111,0
+Low3,112,0
+Low3,113,0
+Low3,114,0
+Low3,115,0
+Low3,116,0
+Low3,117,0
+Low3,118,0
+Low3,119,0
+Low3,120,0
+Low3,121,0
+Low3,122,0
+Low3,123,0
+Low3,124,0
+Low3,125,0
+Low3,126,0
+Low3,127,0
+Low3,128,0
+Low3,129,0
+Low3,130,0
+Low3,131,0
+Low3,132,0
+Low3,133,0
+Low3,134,0
+Low3,135,0
+Low3,136,0
+Low3,137,0
+Low3,138,0.2
+Low3,139,1.9
+Low3,140,6.1
+Low3,141,11.7
+Low3,142,16.4
+Low3,143,18.9
+Low3,144,19.9
+Low3,145,20.8
+Low3,146,22.8
+Low3,147,25.4
+Low3,148,27.7
+Low3,149,29.2
+Low3,150,29.8
+Low3,151,29.4
+Low3,152,27.2
+Low3,153,22.6
+Low3,154,17.3
+Low3,155,13.3
+Low3,156,12
+Low3,157,12.6
+Low3,158,14.1
+Low3,159,17.2
+Low3,160,20.1
+Low3,161,23.4
+Low3,162,25.5
+Low3,163,27.6
+Low3,164,29.5
+Low3,165,31.1
+Low3,166,32.1
+Low3,167,33.2
+Low3,168,35.2
+Low3,169,37.2
+Low3,170,38
+Low3,171,37.4
+Low3,172,35.1
+Low3,173,31
+Low3,174,27.1
+Low3,175,25.3
+Low3,176,25.1
+Low3,177,25.9
+Low3,178,27.8
+Low3,179,29.2
+Low3,180,29.6
+Low3,181,29.5
+Low3,182,29.2
+Low3,183,28.3
+Low3,184,26.1
+Low3,185,23.6
+Low3,186,21
+Low3,187,18.9
+Low3,188,17.1
+Low3,189,15.7
+Low3,190,14.5
+Low3,191,13.7
+Low3,192,12.9
+Low3,193,12.5
+Low3,194,12.2
+Low3,195,12
+Low3,196,12
+Low3,197,12
+Low3,198,12
+Low3,199,12.5
+Low3,200,13
+Low3,201,14
+Low3,202,15
+Low3,203,16.5
+Low3,204,19
+Low3,205,21.2
+Low3,206,23.8
+Low3,207,26.9
+Low3,208,29.6
+Low3,209,32
+Low3,210,35.2
+Low3,211,37.5
+Low3,212,39.2
+Low3,213,40.5
+Low3,214,41.6
+Low3,215,43.1
+Low3,216,45
+Low3,217,47.1
+Low3,218,49
+Low3,219,50.6
+Low3,220,51.8
+Low3,221,52.7
+Low3,222,53.1
+Low3,223,53.5
+Low3,224,53.8
+Low3,225,54.2
+Low3,226,54.8
+Low3,227,55.3
+Low3,228,55.8
+Low3,229,56.2
+Low3,230,56.5
+Low3,231,56.5
+Low3,232,56.2
+Low3,233,54.9
+Low3,234,52.9
+Low3,235,51
+Low3,236,49.8
+Low3,237,49.2
+Low3,238,48.4
+Low3,239,46.9
+Low3,240,44.3
+Low3,241,41.5
+Low3,242,39.5
+Low3,243,37
+Low3,244,34.6
+Low3,245,32.3
+Low3,246,29
+Low3,247,25.1
+Low3,248,22.2
+Low3,249,20.9
+Low3,250,20.4
+Low3,251,19.5
+Low3,252,18.4
+Low3,253,17.8
+Low3,254,17.8
+Low3,255,17.4
+Low3,256,15.7
+Low3,257,14.5
+Low3,258,15.4
+Low3,259,17.9
+Low3,260,20.6
+Low3,261,23.2
+Low3,262,25.7
+Low3,263,28.7
+Low3,264,32.5
+Low3,265,36.1
+Low3,266,39
+Low3,267,40.8
+Low3,268,42.9
+Low3,269,44.4
+Low3,270,45.9
+Low3,271,46
+Low3,272,45.6
+Low3,273,45.3
+Low3,274,43.7
+Low3,275,40.8
+Low3,276,38
+Low3,277,34.4
+Low3,278,30.9
+Low3,279,25.5
+Low3,280,21.4
+Low3,281,20.2
+Low3,282,22.9
+Low3,283,26.6
+Low3,284,30.2
+Low3,285,34.1
+Low3,286,37.4
+Low3,287,40.7
+Low3,288,44
+Low3,289,47.3
+Low3,290,49.2
+Low3,291,49.8
+Low3,292,49.2
+Low3,293,48.1
+Low3,294,47.3
+Low3,295,46.8
+Low3,296,46.7
+Low3,297,46.8
+Low3,298,47.1
+Low3,299,47.3
+Low3,300,47.3
+Low3,301,47.1
+Low3,302,46.6
+Low3,303,45.8
+Low3,304,44.8
+Low3,305,43.3
+Low3,306,41.8
+Low3,307,40.8
+Low3,308,40.3
+Low3,309,40.1
+Low3,310,39.7
+Low3,311,39.2
+Low3,312,38.5
+Low3,313,37.4
+Low3,314,36
+Low3,315,34.4
+Low3,316,33
+Low3,317,31.7
+Low3,318,30
+Low3,319,28
+Low3,320,26.1
+Low3,321,25.6
+Low3,322,24.9
+Low3,323,24.9
+Low3,324,24.3
+Low3,325,23.9
+Low3,326,23.9
+Low3,327,23.6
+Low3,328,23.3
+Low3,329,20.5
+Low3,330,17.5
+Low3,331,16.9
+Low3,332,16.7
+Low3,333,15.9
+Low3,334,15.6
+Low3,335,15
+Low3,336,14.5
+Low3,337,14.3
+Low3,338,14.5
+Low3,339,15.4
+Low3,340,17.8
+Low3,341,21.1
+Low3,342,24.1
+Low3,343,25
+Low3,344,25.3
+Low3,345,25.5
+Low3,346,26.4
+Low3,347,26.6
+Low3,348,27.1
+Low3,349,27.7
+Low3,350,28.1
+Low3,351,28.2
+Low3,352,28.1
+Low3,353,28
+Low3,354,27.9
+Low3,355,27.9
+Low3,356,28.1
+Low3,357,28.2
+Low3,358,28
+Low3,359,26.9
+Low3,360,25
+Low3,361,23.2
+Low3,362,21.9
+Low3,363,21.1
+Low3,364,20.7
+Low3,365,20.7
+Low3,366,20.8
+Low3,367,21.2
+Low3,368,22.1
+Low3,369,23.5
+Low3,370,24.3
+Low3,371,24.5
+Low3,372,23.8
+Low3,373,21.3
+Low3,374,17.7
+Low3,375,14.4
+Low3,376,11.9
+Low3,377,10.2
+Low3,378,8.9
+Low3,379,8
+Low3,380,7.2
+Low3,381,6.1
+Low3,382,4.9
+Low3,383,3.7
+Low3,384,2.3
+Low3,385,0.9
+Low3,386,0
+Low3,387,0
+Low3,388,0
+Low3,389,0
+Low3,390,0
+Low3,391,0
+Low3,392,0.5
+Low3,393,2.1
+Low3,394,4.8
+Low3,395,8.3
+Low3,396,12.3
+Low3,397,16.6
+Low3,398,20.9
+Low3,399,24.2
+Low3,400,25.6
+Low3,401,25.6
+Low3,402,24.9
+Low3,403,23.3
+Low3,404,21.6
+Low3,405,20.2
+Low3,406,18.7
+Low3,407,17
+Low3,408,15.3
+Low3,409,14.2
+Low3,410,13.9
+Low3,411,14
+Low3,412,14.2
+Low3,413,14.5
+Low3,414,14.9
+Low3,415,15.9
+Low3,416,17.4
+Low3,417,18.7
+Low3,418,19.1
+Low3,419,18.8
+Low3,420,17.6
+Low3,421,16.6
+Low3,422,16.2
+Low3,423,16.4
+Low3,424,17.2
+Low3,425,19.1
+Low3,426,22.6
+Low3,427,27.4
+Low3,428,31.6
+Low3,429,33.4
+Low3,430,33.5
+Low3,431,32.8
+Low3,432,31.9
+Low3,433,31.3
+Low3,434,31.1
+Low3,435,30.6
+Low3,436,29.2
+Low3,437,26.7
+Low3,438,23
+Low3,439,18.2
+Low3,440,12.9
+Low3,441,7.7
+Low3,442,3.8
+Low3,443,1.3
+Low3,444,0.2
+Low3,445,0
+Low3,446,0
+Low3,447,0
+Low3,448,0
+Low3,449,0
+Low3,450,0
+Low3,451,0
+Low3,452,0
+Low3,453,0
+Low3,454,0
+Low3,455,0
+Low3,456,0
+Low3,457,0
+Low3,458,0
+Low3,459,0
+Low3,460,0
+Low3,461,0
+Low3,462,0
+Low3,463,0
+Low3,464,0
+Low3,465,0
+Low3,466,0
+Low3,467,0
+Low3,468,0
+Low3,469,0
+Low3,470,0
+Low3,471,0
+Low3,472,0
+Low3,473,0
+Low3,474,0
+Low3,475,0
+Low3,476,0
+Low3,477,0
+Low3,478,0
+Low3,479,0
+Low3,480,0
+Low3,481,0
+Low3,482,0
+Low3,483,0
+Low3,484,0
+Low3,485,0
+Low3,486,0
+Low3,487,0
+Low3,488,0
+Low3,489,0
+Low3,490,0
+Low3,491,0
+Low3,492,0
+Low3,493,0
+Low3,494,0
+Low3,495,0
+Low3,496,0
+Low3,497,0
+Low3,498,0
+Low3,499,0
+Low3,500,0
+Low3,501,0
+Low3,502,0
+Low3,503,0
+Low3,504,0
+Low3,505,0
+Low3,506,0
+Low3,507,0
+Low3,508,0
+Low3,509,0
+Low3,510,0
+Low3,511,0
+Low3,512,0.5
+Low3,513,2.5
+Low3,514,6.6
+Low3,515,11.8
+Low3,516,16.8
+Low3,517,20.5
+Low3,518,21.9
+Low3,519,21.9
+Low3,520,21.3
+Low3,521,20.3
+Low3,522,19.2
+Low3,523,17.8
+Low3,524,15.5
+Low3,525,11.9
+Low3,526,7.6
+Low3,527,4
+Low3,528,2
+Low3,529,1
+Low3,530,0
+Low3,531,0
+Low3,532,0
+Low3,533,0.2
+Low3,534,1.2
+Low3,535,3.2
+Low3,536,5.2
+Low3,537,8.2
+Low3,538,13
+Low3,539,18.8
+Low3,540,23.1
+Low3,541,24.5
+Low3,542,24.5
+Low3,543,24.3
+Low3,544,23.6
+Low3,545,22.3
+Low3,546,20.1
+Low3,547,18.5
+Low3,548,17.2
+Low3,549,16.3
+Low3,550,15.4
+Low3,551,14.7
+Low3,552,14.3
+Low3,553,13.7
+Low3,554,13.3
+Low3,555,13.1
+Low3,556,13.1
+Low3,557,13.3
+Low3,558,13.8
+Low3,559,14.5
+Low3,560,16.5
+Low3,561,17
+Low3,562,17
+Low3,563,17
+Low3,564,15.4
+Low3,565,10.1
+Low3,566,4.8
+Low3,567,0
+Low3,568,0
+Low3,569,0
+Low3,570,0
+Low3,571,0
+Low3,572,0
+Low3,573,0
+Low3,574,0
+Low3,575,0
+Low3,576,0
+Low3,577,0
+Low3,578,0
+Low3,579,0
+Low3,580,0
+Low3,581,0
+Low3,582,0
+Low3,583,0
+Low3,584,0
+Low3,585,0
+Low3,586,0
+Low3,587,0
+Low3,588,0
+Low3,589,0
+Medium,590,0
+Medium,591,0
+Medium,592,0
+Medium,593,0
+Medium,594,0
+Medium,595,0
+Medium,596,0
+Medium,597,0
+Medium,598,0
+Medium,599,0
+Medium,600,0
+Medium,601,1
+Medium,602,2.1
+Medium,603,4.8
+Medium,604,9.1
+Medium,605,14.2
+Medium,606,19.8
+Medium,607,25.5
+Medium,608,30.5
+Medium,609,34.8
+Medium,610,38.8
+Medium,611,42.9
+Medium,612,46.4
+Medium,613,48.3
+Medium,614,48.7
+Medium,615,48.5
+Medium,616,48.4
+Medium,617,48.2
+Medium,618,47.8
+Medium,619,47
+Medium,620,45.9
+Medium,621,44.9
+Medium,622,44.4
+Medium,623,44.3
+Medium,624,44.5
+Medium,625,45.1
+Medium,626,45.7
+Medium,627,46
+Medium,628,46
+Medium,629,46
+Medium,630,46.1
+Medium,631,46.7
+Medium,632,47.7
+Medium,633,48.9
+Medium,634,50.3
+Medium,635,51.6
+Medium,636,52.6
+Medium,637,53
+Medium,638,53
+Medium,639,52.9
+Medium,640,52.7
+Medium,641,52.6
+Medium,642,53.1
+Medium,643,54.3
+Medium,644,55.2
+Medium,645,55.5
+Medium,646,55.9
+Medium,647,56.3
+Medium,648,56.7
+Medium,649,56.9
+Medium,650,56.8
+Medium,651,56
+Medium,652,54.2
+Medium,653,52.1
+Medium,654,50.1
+Medium,655,47.2
+Medium,656,43.2
+Medium,657,39.2
+Medium,658,36.5
+Medium,659,34.3
+Medium,660,31
+Medium,661,26
+Medium,662,20.7
+Medium,663,15.4
+Medium,664,13.1
+Medium,665,12
+Medium,666,12.5
+Medium,667,14
+Medium,668,19
+Medium,669,23.2
+Medium,670,28
+Medium,671,32
+Medium,672,34
+Medium,673,36
+Medium,674,38
+Medium,675,40
+Medium,676,40.3
+Medium,677,40.5
+Medium,678,39
+Medium,679,35.7
+Medium,680,31.8
+Medium,681,27.1
+Medium,682,22.8
+Medium,683,21.1
+Medium,684,18.9
+Medium,685,18.9
+Medium,686,21.3
+Medium,687,23.9
+Medium,688,25.9
+Medium,689,28.4
+Medium,690,30.3
+Medium,691,30.9
+Medium,692,31.1
+Medium,693,31.8
+Medium,694,32.7
+Medium,695,33.2
+Medium,696,32.4
+Medium,697,28.3
+Medium,698,25.8
+Medium,699,23.1
+Medium,700,21.8
+Medium,701,21.2
+Medium,702,21
+Medium,703,21
+Medium,704,20.9
+Medium,705,19.9
+Medium,706,17.9
+Medium,707,15.1
+Medium,708,12.8
+Medium,709,12
+Medium,710,13.2
+Medium,711,17.1
+Medium,712,21.1
+Medium,713,21.8
+Medium,714,21.2
+Medium,715,18.5
+Medium,716,13.9
+Medium,717,12
+Medium,718,12
+Medium,719,13
+Medium,720,16
+Medium,721,18.5
+Medium,722,20.6
+Medium,723,22.5
+Medium,724,24
+Medium,725,26.6
+Medium,726,29.9
+Medium,727,34.8
+Medium,728,37.8
+Medium,729,40.2
+Medium,730,41.6
+Medium,731,41.9
+Medium,732,42
+Medium,733,42.2
+Medium,734,42.4
+Medium,735,42.7
+Medium,736,43.1
+Medium,737,43.7
+Medium,738,44
+Medium,739,44.1
+Medium,740,45.3
+Medium,741,46.4
+Medium,742,47.2
+Medium,743,47.3
+Medium,744,47.4
+Medium,745,47.4
+Medium,746,47.5
+Medium,747,47.9
+Medium,748,48.6
+Medium,749,49.4
+Medium,750,49.8
+Medium,751,49.8
+Medium,752,49.7
+Medium,753,49.3
+Medium,754,48.5
+Medium,755,47.6
+Medium,756,46.3
+Medium,757,43.7
+Medium,758,39.3
+Medium,759,34.1
+Medium,760,29
+Medium,761,23.7
+Medium,762,18.4
+Medium,763,14.3
+Medium,764,12
+Medium,765,12.8
+Medium,766,16
+Medium,767,19.1
+Medium,768,22.4
+Medium,769,25.6
+Medium,770,30.1
+Medium,771,35.3
+Medium,772,39.9
+Medium,773,44.5
+Medium,774,47.5
+Medium,775,50.9
+Medium,776,54.1
+Medium,777,56.3
+Medium,778,58.1
+Medium,779,59.8
+Medium,780,61.1
+Medium,781,62.1
+Medium,782,62.8
+Medium,783,63.3
+Medium,784,63.6
+Medium,785,64
+Medium,786,64.7
+Medium,787,65.2
+Medium,788,65.3
+Medium,789,65.3
+Medium,790,65.4
+Medium,791,65.7
+Medium,792,66
+Medium,793,65.6
+Medium,794,63.5
+Medium,795,59.7
+Medium,796,54.6
+Medium,797,49.3
+Medium,798,44.9
+Medium,799,42.3
+Medium,800,41.4
+Medium,801,41.3
+Medium,802,42.1
+Medium,803,44.7
+Medium,804,48.4
+Medium,805,51.4
+Medium,806,52.7
+Medium,807,53
+Medium,808,52.5
+Medium,809,51.3
+Medium,810,49.7
+Medium,811,47.4
+Medium,812,43.7
+Medium,813,39.7
+Medium,814,35.5
+Medium,815,31.1
+Medium,816,26.3
+Medium,817,21.9
+Medium,818,18
+Medium,819,17
+Medium,820,18
+Medium,821,21.4
+Medium,822,24.8
+Medium,823,27.9
+Medium,824,30.8
+Medium,825,33
+Medium,826,35.1
+Medium,827,37.1
+Medium,828,38.9
+Medium,829,41.4
+Medium,830,44
+Medium,831,46.3
+Medium,832,47.7
+Medium,833,48.2
+Medium,834,48.7
+Medium,835,49.3
+Medium,836,49.8
+Medium,837,50.2
+Medium,838,50.9
+Medium,839,51.8
+Medium,840,52.5
+Medium,841,53.3
+Medium,842,54.5
+Medium,843,55.7
+Medium,844,56.5
+Medium,845,56.8
+Medium,846,57
+Medium,847,57.2
+Medium,848,57.7
+Medium,849,58.7
+Medium,850,60.1
+Medium,851,61.1
+Medium,852,61.7
+Medium,853,62.3
+Medium,854,62.9
+Medium,855,63.3
+Medium,856,63.4
+Medium,857,63.5
+Medium,858,64.5
+Medium,859,65.8
+Medium,860,66.8
+Medium,861,67.4
+Medium,862,68.8
+Medium,863,71.1
+Medium,864,72.3
+Medium,865,72.8
+Medium,866,73.4
+Medium,867,74.6
+Medium,868,76
+Medium,869,76.6
+Medium,870,76.5
+Medium,871,76.2
+Medium,872,75.8
+Medium,873,75.4
+Medium,874,74.8
+Medium,875,73.9
+Medium,876,72.7
+Medium,877,71.3
+Medium,878,70.4
+Medium,879,70
+Medium,880,70
+Medium,881,69
+Medium,882,68
+Medium,883,68
+Medium,884,68
+Medium,885,68.1
+Medium,886,68.4
+Medium,887,68.6
+Medium,888,68.7
+Medium,889,68.5
+Medium,890,68.1
+Medium,891,67.3
+Medium,892,66.2
+Medium,893,64.8
+Medium,894,63.6
+Medium,895,62.6
+Medium,896,62.1
+Medium,897,61.9
+Medium,898,61.9
+Medium,899,61.8
+Medium,900,61.5
+Medium,901,60.9
+Medium,902,59.7
+Medium,903,54.6
+Medium,904,49.3
+Medium,905,44.9
+Medium,906,42.3
+Medium,907,41.4
+Medium,908,41.3
+Medium,909,42.1
+Medium,910,44.7
+Medium,911,48.4
+Medium,912,51.4
+Medium,913,52.7
+Medium,914,54
+Medium,915,57
+Medium,916,58.1
+Medium,917,59.2
+Medium,918,59
+Medium,919,59.1
+Medium,920,59.5
+Medium,921,60.5
+Medium,922,62.3
+Medium,923,63.9
+Medium,924,65.1
+Medium,925,64.1
+Medium,926,62.7
+Medium,927,62
+Medium,928,61.3
+Medium,929,60.9
+Medium,930,60.5
+Medium,931,60.2
+Medium,932,59.8
+Medium,933,59.4
+Medium,934,58.6
+Medium,935,57.5
+Medium,936,56.6
+Medium,937,56
+Medium,938,55.5
+Medium,939,55
+Medium,940,54.4
+Medium,941,54.1
+Medium,942,54
+Medium,943,53.9
+Medium,944,53.9
+Medium,945,54
+Medium,946,54.2
+Medium,947,55
+Medium,948,55.8
+Medium,949,56.2
+Medium,950,56.1
+Medium,951,55.1
+Medium,952,52.7
+Medium,953,48.4
+Medium,954,43.1
+Medium,955,37.8
+Medium,956,32.5
+Medium,957,27.2
+Medium,958,25.1
+Medium,959,26
+Medium,960,29.3
+Medium,961,34.6
+Medium,962,40.4
+Medium,963,45.3
+Medium,964,49
+Medium,965,51.1
+Medium,966,52.1
+Medium,967,52.2
+Medium,968,52.1
+Medium,969,51.7
+Medium,970,50.9
+Medium,971,49.2
+Medium,972,45.9
+Medium,973,40.6
+Medium,974,35.3
+Medium,975,30
+Medium,976,24.7
+Medium,977,19.3
+Medium,978,16
+Medium,979,13.2
+Medium,980,10.7
+Medium,981,8.8
+Medium,982,7.2
+Medium,983,5.5
+Medium,984,3.2
+Medium,985,1.1
+Medium,986,0
+Medium,987,0
+Medium,988,0
+Medium,989,0
+Medium,990,0
+Medium,991,0
+Medium,992,0
+Medium,993,0
+Medium,994,0
+Medium,995,0
+Medium,996,0
+Medium,997,0
+Medium,998,0
+Medium,999,0
+Medium,1000,0
+Medium,1001,0
+Medium,1002,0
+Medium,1003,0
+Medium,1004,0
+Medium,1005,0
+Medium,1006,0
+Medium,1007,0
+Medium,1008,0
+Medium,1009,0
+Medium,1010,0
+Medium,1011,0
+Medium,1012,0
+Medium,1013,0
+Medium,1014,0
+Medium,1015,0
+Medium,1016,0
+Medium,1017,0
+Medium,1018,0
+Medium,1019,0
+Medium,1020,0
+Medium,1021,0
+Medium,1022,0
+High 3,1023,0
+High 3,1024,0
+High 3,1025,0
+High 3,1026,0
+High 3,1027,0.8
+High 3,1028,3.6
+High 3,1029,8.6
+High 3,1030,14.6
+High 3,1031,20
+High 3,1032,24.4
+High 3,1033,28.2
+High 3,1034,31.7
+High 3,1035,35
+High 3,1036,37.6
+High 3,1037,39.7
+High 3,1038,41.5
+High 3,1039,43.6
+High 3,1040,46
+High 3,1041,48.4
+High 3,1042,50.5
+High 3,1043,51.9
+High 3,1044,52.6
+High 3,1045,52.8
+High 3,1046,52.9
+High 3,1047,53.1
+High 3,1048,53.3
+High 3,1049,53.1
+High 3,1050,52.3
+High 3,1051,50.7
+High 3,1052,48.8
+High 3,1053,46.5
+High 3,1054,43.8
+High 3,1055,40.3
+High 3,1056,36
+High 3,1057,30.7
+High 3,1058,25.4
+High 3,1059,21
+High 3,1060,16.7
+High 3,1061,13.4
+High 3,1062,12
+High 3,1063,12.1
+High 3,1064,12.8
+High 3,1065,15.6
+High 3,1066,19.9
+High 3,1067,23.4
+High 3,1068,24.6
+High 3,1069,25.2
+High 3,1070,26.4
+High 3,1071,28.8
+High 3,1072,31.8
+High 3,1073,35.3
+High 3,1074,39.5
+High 3,1075,44.5
+High 3,1076,49.3
+High 3,1077,53.3
+High 3,1078,56.4
+High 3,1079,58.9
+High 3,1080,61.2
+High 3,1081,62.6
+High 3,1082,63
+High 3,1083,62.5
+High 3,1084,60.9
+High 3,1085,59.3
+High 3,1086,58.6
+High 3,1087,58.6
+High 3,1088,58.7
+High 3,1089,58.8
+High 3,1090,58.8
+High 3,1091,58.8
+High 3,1092,59.1
+High 3,1093,60.1
+High 3,1094,61.7
+High 3,1095,63
+High 3,1096,63.7
+High 3,1097,63.9
+High 3,1098,63.5
+High 3,1099,62.3
+High 3,1100,60.3
+High 3,1101,58.9
+High 3,1102,58.4
+High 3,1103,58.8
+High 3,1104,60.2
+High 3,1105,62.3
+High 3,1106,63.9
+High 3,1107,64.5
+High 3,1108,64.4
+High 3,1109,63.5
+High 3,1110,62
+High 3,1111,61.2
+High 3,1112,61.3
+High 3,1113,62.6
+High 3,1114,65.3
+High 3,1115,68
+High 3,1116,69.4
+High 3,1117,69.7
+High 3,1118,69.3
+High 3,1119,68.1
+High 3,1120,66.9
+High 3,1121,66.2
+High 3,1122,65.7
+High 3,1123,64.9
+High 3,1124,63.2
+High 3,1125,60.3
+High 3,1126,55.8
+High 3,1127,50.5
+High 3,1128,45.2
+High 3,1129,40.1
+High 3,1130,36.2
+High 3,1131,32.9
+High 3,1132,29.8
+High 3,1133,26.6
+High 3,1134,23
+High 3,1135,19.4
+High 3,1136,16.3
+High 3,1137,14.6
+High 3,1138,14.2
+High 3,1139,14.3
+High 3,1140,14.6
+High 3,1141,15.1
+High 3,1142,16.4
+High 3,1143,19.1
+High 3,1144,22.5
+High 3,1145,24.4
+High 3,1146,24.8
+High 3,1147,22.7
+High 3,1148,17.4
+High 3,1149,13.8
+High 3,1150,12
+High 3,1151,12
+High 3,1152,12
+High 3,1153,13.9
+High 3,1154,17.7
+High 3,1155,22.8
+High 3,1156,27.3
+High 3,1157,31.2
+High 3,1158,35.2
+High 3,1159,39.4
+High 3,1160,42.5
+High 3,1161,45.4
+High 3,1162,48.2
+High 3,1163,50.3
+High 3,1164,52.6
+High 3,1165,54.5
+High 3,1166,56.6
+High 3,1167,58.3
+High 3,1168,60
+High 3,1169,61.5
+High 3,1170,63.1
+High 3,1171,64.3
+High 3,1172,65.7
+High 3,1173,67.1
+High 3,1174,68.3
+High 3,1175,69.7
+High 3,1176,70.6
+High 3,1177,71.6
+High 3,1178,72.6
+High 3,1179,73.5
+High 3,1180,74.2
+High 3,1181,74.9
+High 3,1182,75.6
+High 3,1183,76.3
+High 3,1184,77.1
+High 3,1185,77.9
+High 3,1186,78.5
+High 3,1187,79
+High 3,1188,79.7
+High 3,1189,80.3
+High 3,1190,81
+High 3,1191,81.6
+High 3,1192,82.4
+High 3,1193,82.9
+High 3,1194,83.4
+High 3,1195,83.8
+High 3,1196,84.2
+High 3,1197,84.7
+High 3,1198,85.2
+High 3,1199,85.6
+High 3,1200,86.3
+High 3,1201,86.8
+High 3,1202,87.4
+High 3,1203,88
+High 3,1204,88.3
+High 3,1205,88.7
+High 3,1206,89
+High 3,1207,89.3
+High 3,1208,89.8
+High 3,1209,90.2
+High 3,1210,90.6
+High 3,1211,91
+High 3,1212,91.3
+High 3,1213,91.6
+High 3,1214,91.9
+High 3,1215,92.2
+High 3,1216,92.8
+High 3,1217,93.1
+High 3,1218,93.3
+High 3,1219,93.5
+High 3,1220,93.7
+High 3,1221,93.9
+High 3,1222,94
+High 3,1223,94.1
+High 3,1224,94.3
+High 3,1225,94.4
+High 3,1226,94.6
+High 3,1227,94.7
+High 3,1228,94.8
+High 3,1229,95
+High 3,1230,95.1
+High 3,1231,95.3
+High 3,1232,95.4
+High 3,1233,95.6
+High 3,1234,95.7
+High 3,1235,95.8
+High 3,1236,96
+High 3,1237,96.1
+High 3,1238,96.3
+High 3,1239,96.4
+High 3,1240,96.6
+High 3,1241,96.8
+High 3,1242,97
+High 3,1243,97.2
+High 3,1244,97.3
+High 3,1245,97.4
+High 3,1246,97.4
+High 3,1247,97.4
+High 3,1248,97.4
+High 3,1249,97.3
+High 3,1250,97.3
+High 3,1251,97.3
+High 3,1252,97.3
+High 3,1253,97.2
+High 3,1254,97.1
+High 3,1255,97
+High 3,1256,96.9
+High 3,1257,96.7
+High 3,1258,96.4
+High 3,1259,96.1
+High 3,1260,95.7
+High 3,1261,95.5
+High 3,1262,95.3
+High 3,1263,95.2
+High 3,1264,95
+High 3,1265,94.9
+High 3,1266,94.7
+High 3,1267,94.5
+High 3,1268,94.4
+High 3,1269,94.4
+High 3,1270,94.3
+High 3,1271,94.3
+High 3,1272,94.1
+High 3,1273,93.9
+High 3,1274,93.4
+High 3,1275,92.8
+High 3,1276,92
+High 3,1277,91.3
+High 3,1278,90.6
+High 3,1279,90
+High 3,1280,89.3
+High 3,1281,88.7
+High 3,1282,88.1
+High 3,1283,87.4
+High 3,1284,86.7
+High 3,1285,86
+High 3,1286,85.3
+High 3,1287,84.7
+High 3,1288,84.1
+High 3,1289,83.5
+High 3,1290,82.9
+High 3,1291,82.3
+High 3,1292,81.7
+High 3,1293,81.1
+High 3,1294,80.5
+High 3,1295,79.9
+High 3,1296,79.4
+High 3,1297,79.1
+High 3,1298,78.8
+High 3,1299,78.5
+High 3,1300,78.2
+High 3,1301,77.9
+High 3,1302,77.6
+High 3,1303,77.3
+High 3,1304,77
+High 3,1305,76.7
+High 3,1306,76
+High 3,1307,76
+High 3,1308,76
+High 3,1309,75.9
+High 3,1310,75.9
+High 3,1311,75.8
+High 3,1312,75.7
+High 3,1313,75.5
+High 3,1314,75.2
+High 3,1315,75
+High 3,1316,74.7
+High 3,1317,74.1
+High 3,1318,73.7
+High 3,1319,73.3
+High 3,1320,73.5
+High 3,1321,74
+High 3,1322,74.9
+High 3,1323,76.1
+High 3,1324,77.7
+High 3,1325,79.2
+High 3,1326,80.3
+High 3,1327,80.8
+High 3,1328,81
+High 3,1329,81
+High 3,1330,81
+High 3,1331,81
+High 3,1332,81
+High 3,1333,80.9
+High 3,1334,80.6
+High 3,1335,80.3
+High 3,1336,80
+High 3,1337,79.9
+High 3,1338,79.8
+High 3,1339,79.8
+High 3,1340,79.8
+High 3,1341,79.9
+High 3,1342,80
+High 3,1343,80.4
+High 3,1344,80.8
+High 3,1345,81.2
+High 3,1346,81.5
+High 3,1347,81.6
+High 3,1348,81.6
+High 3,1349,81.4
+High 3,1350,80.7
+High 3,1351,79.6
+High 3,1352,78.2
+High 3,1353,76.8
+High 3,1354,75.3
+High 3,1355,73.8
+High 3,1356,72.1
+High 3,1357,70.2
+High 3,1358,68.2
+High 3,1359,66.1
+High 3,1360,63.8
+High 3,1361,61.6
+High 3,1362,60.2
+High 3,1363,59.8
+High 3,1364,60.4
+High 3,1365,61.8
+High 3,1366,62.6
+High 3,1367,62.7
+High 3,1368,61.9
+High 3,1369,60
+High 3,1370,58.4
+High 3,1371,57.8
+High 3,1372,57.8
+High 3,1373,57.8
+High 3,1374,57.3
+High 3,1375,56.2
+High 3,1376,54.3
+High 3,1377,50.8
+High 3,1378,45.5
+High 3,1379,40.2
+High 3,1380,34.9
+High 3,1381,29.6
+High 3,1382,27.3
+High 3,1383,29.3
+High 3,1384,32.9
+High 3,1385,35.6
+High 3,1386,36.7
+High 3,1387,37.6
+High 3,1388,39.4
+High 3,1389,42.5
+High 3,1390,46.5
+High 3,1391,50.2
+High 3,1392,52.8
+High 3,1393,54.3
+High 3,1394,54.9
+High 3,1395,54.9
+High 3,1396,54.7
+High 3,1397,54.1
+High 3,1398,53.2
+High 3,1399,52.1
+High 3,1400,50.7
+High 3,1401,49.1
+High 3,1402,47.4
+High 3,1403,45.2
+High 3,1404,41.8
+High 3,1405,36.5
+High 3,1406,31.2
+High 3,1407,27.6
+High 3,1408,26.9
+High 3,1409,27.3
+High 3,1410,27.5
+High 3,1411,27.4
+High 3,1412,27.1
+High 3,1413,26.7
+High 3,1414,26.8
+High 3,1415,28.2
+High 3,1416,31.1
+High 3,1417,34.8
+High 3,1418,38.4
+High 3,1419,40.9
+High 3,1420,41.7
+High 3,1421,40.9
+High 3,1422,38.3
+High 3,1423,35.3
+High 3,1424,34.3
+High 3,1425,34.6
+High 3,1426,36.3
+High 3,1427,39.5
+High 3,1428,41.8
+High 3,1429,42.5
+High 3,1430,41.9
+High 3,1431,40.1
+High 3,1432,36.6
+High 3,1433,31.3
+High 3,1434,26
+High 3,1435,20.6
+High 3,1436,19.1
+High 3,1437,19.7
+High 3,1438,21.1
+High 3,1439,22
+High 3,1440,22.1
+High 3,1441,21.4
+High 3,1442,19.6
+High 3,1443,18.3
+High 3,1444,18
+High 3,1445,18.3
+High 3,1446,18.5
+High 3,1447,17.9
+High 3,1448,15
+High 3,1449,9.9
+High 3,1450,4.6
+High 3,1451,1.2
+High 3,1452,0
+High 3,1453,0
+High 3,1454,0
+High 3,1455,0
+High 3,1456,0
+High 3,1457,0
+High 3,1458,0
+High 3,1459,0
+High 3,1460,0
+High 3,1461,0
+High 3,1462,0
+High 3,1463,0
+High 3,1464,0
+High 3,1465,0
+High 3,1466,0
+High 3,1467,0
+High 3,1468,0
+High 3,1469,0
+High 3,1470,0
+High 3,1471,0
+High 3,1472,0
+High 3,1473,0
+High 3,1474,0
+High 3,1475,0
+High 3,1476,0
+High 3,1477,0
+Extra-High3,1478,0
+Extra-High3,1479,2.2
+Extra-High3,1480,4.4
+Extra-High3,1481,6.3
+Extra-High3,1482,7.9
+Extra-High3,1483,9.2
+Extra-High3,1484,10.4
+Extra-High3,1485,11.5
+Extra-High3,1486,12.9
+Extra-High3,1487,14.7
+Extra-High3,1488,17
+Extra-High3,1489,19.8
+Extra-High3,1490,23.1
+Extra-High3,1491,26.7
+Extra-High3,1492,30.5
+Extra-High3,1493,34.1
+Extra-High3,1494,37.5
+Extra-High3,1495,40.6
+Extra-High3,1496,43.3
+Extra-High3,1497,45.7
+Extra-High3,1498,47.7
+Extra-High3,1499,49.3
+Extra-High3,1500,50.5
+Extra-High3,1501,51.3
+Extra-High3,1502,52.1
+Extra-High3,1503,52.7
+Extra-High3,1504,53.4
+Extra-High3,1505,54
+Extra-High3,1506,54.5
+Extra-High3,1507,55
+Extra-High3,1508,55.6
+Extra-High3,1509,56.3
+Extra-High3,1510,57.2
+Extra-High3,1511,58.5
+Extra-High3,1512,60.2
+Extra-High3,1513,62.3
+Extra-High3,1514,64.7
+Extra-High3,1515,67.1
+Extra-High3,1516,69.2
+Extra-High3,1517,70.7
+Extra-High3,1518,71.9
+Extra-High3,1519,72.7
+Extra-High3,1520,73.4
+Extra-High3,1521,73.8
+Extra-High3,1522,74.1
+Extra-High3,1523,74
+Extra-High3,1524,73.6
+Extra-High3,1525,72.5
+Extra-High3,1526,70.8
+Extra-High3,1527,68.6
+Extra-High3,1528,66.2
+Extra-High3,1529,64
+Extra-High3,1530,62.2
+Extra-High3,1531,60.9
+Extra-High3,1532,60.2
+Extra-High3,1533,60
+Extra-High3,1534,60.4
+Extra-High3,1535,61.4
+Extra-High3,1536,63.2
+Extra-High3,1537,65.6
+Extra-High3,1538,68.4
+Extra-High3,1539,71.6
+Extra-High3,1540,74.9
+Extra-High3,1541,78.4
+Extra-High3,1542,81.8
+Extra-High3,1543,84.9
+Extra-High3,1544,87.4
+Extra-High3,1545,89
+Extra-High3,1546,90
+Extra-High3,1547,90.6
+Extra-High3,1548,91
+Extra-High3,1549,91.5
+Extra-High3,1550,92
+Extra-High3,1551,92.7
+Extra-High3,1552,93.4
+Extra-High3,1553,94.2
+Extra-High3,1554,94.9
+Extra-High3,1555,95.7
+Extra-High3,1556,96.6
+Extra-High3,1557,97.7
+Extra-High3,1558,98.9
+Extra-High3,1559,100.4
+Extra-High3,1560,102
+Extra-High3,1561,103.6
+Extra-High3,1562,105.2
+Extra-High3,1563,106.8
+Extra-High3,1564,108.5
+Extra-High3,1565,110.2
+Extra-High3,1566,111.9
+Extra-High3,1567,113.7
+Extra-High3,1568,115.3
+Extra-High3,1569,116.8
+Extra-High3,1570,118.2
+Extra-High3,1571,119.5
+Extra-High3,1572,120.7
+Extra-High3,1573,121.8
+Extra-High3,1574,122.6
+Extra-High3,1575,123.2
+Extra-High3,1576,123.6
+Extra-High3,1577,123.7
+Extra-High3,1578,123.6
+Extra-High3,1579,123.3
+Extra-High3,1580,123
+Extra-High3,1581,122.5
+Extra-High3,1582,122.1
+Extra-High3,1583,121.5
+Extra-High3,1584,120.8
+Extra-High3,1585,120
+Extra-High3,1586,119.1
+Extra-High3,1587,118.1
+Extra-High3,1588,117.1
+Extra-High3,1589,116.2
+Extra-High3,1590,115.5
+Extra-High3,1591,114.9
+Extra-High3,1592,114.5
+Extra-High3,1593,114.1
+Extra-High3,1594,113.9
+Extra-High3,1595,113.7
+Extra-High3,1596,113.3
+Extra-High3,1597,112.9
+Extra-High3,1598,112.2
+Extra-High3,1599,111.4
+Extra-High3,1600,110.5
+Extra-High3,1601,109.5
+Extra-High3,1602,108.5
+Extra-High3,1603,107.7
+Extra-High3,1604,107.1
+Extra-High3,1605,106.6
+Extra-High3,1606,106.4
+Extra-High3,1607,106.2
+Extra-High3,1608,106.2
+Extra-High3,1609,106.2
+Extra-High3,1610,106.4
+Extra-High3,1611,106.5
+Extra-High3,1612,106.8
+Extra-High3,1613,107.2
+Extra-High3,1614,107.8
+Extra-High3,1615,108.5
+Extra-High3,1616,109.4
+Extra-High3,1617,110.5
+Extra-High3,1618,111.7
+Extra-High3,1619,113
+Extra-High3,1620,114.1
+Extra-High3,1621,115.1
+Extra-High3,1622,115.9
+Extra-High3,1623,116.5
+Extra-High3,1624,116.7
+Extra-High3,1625,116.6
+Extra-High3,1626,116.2
+Extra-High3,1627,115.2
+Extra-High3,1628,113.8
+Extra-High3,1629,112
+Extra-High3,1630,110.1
+Extra-High3,1631,108.3
+Extra-High3,1632,107
+Extra-High3,1633,106.1
+Extra-High3,1634,105.8
+Extra-High3,1635,105.7
+Extra-High3,1636,105.7
+Extra-High3,1637,105.6
+Extra-High3,1638,105.3
+Extra-High3,1639,104.9
+Extra-High3,1640,104.4
+Extra-High3,1641,104
+Extra-High3,1642,103.8
+Extra-High3,1643,103.9
+Extra-High3,1644,104.4
+Extra-High3,1645,105.1
+Extra-High3,1646,106.1
+Extra-High3,1647,107.2
+Extra-High3,1648,108.5
+Extra-High3,1649,109.9
+Extra-High3,1650,111.3
+Extra-High3,1651,112.7
+Extra-High3,1652,113.9
+Extra-High3,1653,115
+Extra-High3,1654,116
+Extra-High3,1655,116.8
+Extra-High3,1656,117.6
+Extra-High3,1657,118.4
+Extra-High3,1658,119.2
+Extra-High3,1659,120
+Extra-High3,1660,120.8
+Extra-High3,1661,121.6
+Extra-High3,1662,122.3
+Extra-High3,1663,123.1
+Extra-High3,1664,123.8
+Extra-High3,1665,124.4
+Extra-High3,1666,125
+Extra-High3,1667,125.4
+Extra-High3,1668,125.8
+Extra-High3,1669,126.1
+Extra-High3,1670,126.4
+Extra-High3,1671,126.6
+Extra-High3,1672,126.7
+Extra-High3,1673,126.8
+Extra-High3,1674,126.9
+Extra-High3,1675,126.9
+Extra-High3,1676,126.9
+Extra-High3,1677,126.8
+Extra-High3,1678,126.6
+Extra-High3,1679,126.3
+Extra-High3,1680,126
+Extra-High3,1681,125.7
+Extra-High3,1682,125.6
+Extra-High3,1683,125.6
+Extra-High3,1684,125.8
+Extra-High3,1685,126.2
+Extra-High3,1686,126.6
+Extra-High3,1687,127
+Extra-High3,1688,127.4
+Extra-High3,1689,127.6
+Extra-High3,1690,127.8
+Extra-High3,1691,127.9
+Extra-High3,1692,128
+Extra-High3,1693,128.1
+Extra-High3,1694,128.2
+Extra-High3,1695,128.3
+Extra-High3,1696,128.4
+Extra-High3,1697,128.5
+Extra-High3,1698,128.6
+Extra-High3,1699,128.6
+Extra-High3,1700,128.5
+Extra-High3,1701,128.3
+Extra-High3,1702,128.1
+Extra-High3,1703,127.9
+Extra-High3,1704,127.6
+Extra-High3,1705,127.4
+Extra-High3,1706,127.2
+Extra-High3,1707,127
+Extra-High3,1708,126.9
+Extra-High3,1709,126.8
+Extra-High3,1710,126.7
+Extra-High3,1711,126.8
+Extra-High3,1712,126.9
+Extra-High3,1713,127.1
+Extra-High3,1714,127.4
+Extra-High3,1715,127.7
+Extra-High3,1716,128.1
+Extra-High3,1717,128.5
+Extra-High3,1718,129
+Extra-High3,1719,129.5
+Extra-High3,1720,130.1
+Extra-High3,1721,130.6
+Extra-High3,1722,131
+Extra-High3,1723,131.2
+Extra-High3,1724,131.3
+Extra-High3,1725,131.2
+Extra-High3,1726,130.7
+Extra-High3,1727,129.8
+Extra-High3,1728,128.4
+Extra-High3,1729,126.5
+Extra-High3,1730,124.1
+Extra-High3,1731,121.6
+Extra-High3,1732,119
+Extra-High3,1733,116.5
+Extra-High3,1734,114.1
+Extra-High3,1735,111.8
+Extra-High3,1736,109.5
+Extra-High3,1737,107.1
+Extra-High3,1738,104.8
+Extra-High3,1739,102.5
+Extra-High3,1740,100.4
+Extra-High3,1741,98.6
+Extra-High3,1742,97.2
+Extra-High3,1743,95.9
+Extra-High3,1744,94.8
+Extra-High3,1745,93.8
+Extra-High3,1746,92.8
+Extra-High3,1747,91.8
+Extra-High3,1748,91
+Extra-High3,1749,90.2
+Extra-High3,1750,89.6
+Extra-High3,1751,89.1
+Extra-High3,1752,88.6
+Extra-High3,1753,88.1
+Extra-High3,1754,87.6
+Extra-High3,1755,87.1
+Extra-High3,1756,86.6
+Extra-High3,1757,86.1
+Extra-High3,1758,85.5
+Extra-High3,1759,85
+Extra-High3,1760,84.4
+Extra-High3,1761,83.8
+Extra-High3,1762,83.2
+Extra-High3,1763,82.6
+Extra-High3,1764,82
+Extra-High3,1765,81.3
+Extra-High3,1766,80.4
+Extra-High3,1767,79.1
+Extra-High3,1768,77.4
+Extra-High3,1769,75.1
+Extra-High3,1770,72.3
+Extra-High3,1771,69.1
+Extra-High3,1772,65.9
+Extra-High3,1773,62.7
+Extra-High3,1774,59.7
+Extra-High3,1775,57
+Extra-High3,1776,54.6
+Extra-High3,1777,52.2
+Extra-High3,1778,49.7
+Extra-High3,1779,46.8
+Extra-High3,1780,43.5
+Extra-High3,1781,39.9
+Extra-High3,1782,36.4
+Extra-High3,1783,33.2
+Extra-High3,1784,30.5
+Extra-High3,1785,28.3
+Extra-High3,1786,26.3
+Extra-High3,1787,24.4
+Extra-High3,1788,22.5
+Extra-High3,1789,20.5
+Extra-High3,1790,18.2
+Extra-High3,1791,15.5
+Extra-High3,1792,12.3
+Extra-High3,1793,8.7
+Extra-High3,1794,5.2
+Extra-High3,1795,0
+Extra-High3,1796,0
+Extra-High3,1797,0
+Extra-High3,1798,0
+Extra-High3,1799,0
+Extra-High3,1800,0
