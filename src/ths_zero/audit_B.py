@@ -78,25 +78,30 @@ def compute_soc_reconstruction_residual_B(ts: pd.DataFrame) -> pd.Series:
     E_rep = ts["E_batt_Wh"].to_numpy(dtype=float)
     soc_rep = ts["soc_pct"].to_numpy(dtype=float)
 
-    # End-of-step reconstruction
+    # End-of-step reconstruction (E_rep[k] is end-of-step)
     E_rec = np.empty_like(E_rep)
     E_rec[0] = E_rep[0]
 
     for k in range(1, len(E_rec)):
-        E_next = E_rec[k - 1] - (Pchem[k] * dt[k] / 3600.0)
+        # use previous row's power to get current end-of-step
+        E_next = E_rec[k - 1] - (Pchem[k - 1] * dt[k - 1] / 3600.0)
+
+        # clip using current step limits (k) is fine; or k-1 if you log those as start-of-step
         if np.isfinite(Emin[k]):
             E_next = max(E_next, Emin[k])
         if np.isfinite(Emax[k]):
             E_next = min(E_next, Emax[k])
+
         E_rec[k] = E_next
 
-    soc_rec = 100.0 * (E_rec / np.maximum(E_usable, _EPS))
+    # SOC definition (your test data shows Emin=0 so either formula matches here)
+    soc_rec = 100.0 * ((E_rec - Emin) / np.maximum(E_usable, _EPS))
     resid = soc_rec - soc_rep
 
-    # residual at k=0 is undefined (no logged initial energy), set to 0 by convention
+    # frozen semantics: residual at k=0 defined as 0
     resid[0] = 0.0
+    return pd.Series(resid, index=ts.index, dtype=float)
 
-    return pd.Series(resid, index=ts.index, name="soc_recon_resid_pct")
 def compute_audit_outputs_B(ts: pd.DataFrame, cons: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, Any], Dict[str, Any]]:
     """Compute Phase B constraints + KPIs + energy budgets.
 
