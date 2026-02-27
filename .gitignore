@@ -1,0 +1,19 @@
+# generated outputs / runs
+artifacts/
+_local_archive/
+runs/
+out_*/
+plots_*/
+Viz/
+
+# python build/install artifacts
+*.egg-info/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+
+# env/IDE
+.venv/
+.vscode/
+.idea/

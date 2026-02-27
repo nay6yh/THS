@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ths-zero"
+version = "0.1.0"
+description = "THS Zero Simulator / benchmark utilities"
+readme = "README_PhaseB_B2.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "nay6yh" }]
+dependencies = [
+  "numpy",
+  "pandas",
+  "matplotlib",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = [
+  "artifacts*",
+  "data*",
+  "tests*",
+  "_local_archive*",
+]
