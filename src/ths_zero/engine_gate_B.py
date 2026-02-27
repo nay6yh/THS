@@ -207,8 +207,12 @@ def apply_engine_supervisor_B(
     if prev_combust == 1 and combust_on_timer < (params.min_combust_on_s - 1e-9):
         allow_cut = False
 
+    power_override = False
+    soc_override = False
+
     # min combust OFF: keep combust OFF until min satisfied unless override triggers
     if prev_combust == 0 and combust_off_timer < (params.min_combust_off_s - 1e-9):
+        gate_state["dbg_min_off_hits"] = int(gate_state.get("dbg_min_off_hits", 0)) + 1
         allow_relight = False
 
         # conservative SOC override: require deeper low SOC and dwell
@@ -218,8 +222,15 @@ def apply_engine_supervisor_B(
         else:
             soc_low_timer = 0.0
 
-        if (P_req > params.override_start_power_W) or (soc_low_timer >= params.soc_low_dwell_s):
+        power_override = (P_req > params.override_start_power_W)
+        soc_override = (soc_low_timer >= params.soc_low_dwell_s)
+        if power_override or soc_override:
             allow_relight = True
+            gate_state["dbg_overridden"] = int(gate_state.get("dbg_overridden", 0)) + 1
+            if power_override:
+                gate_state["dbg_by_power"] = int(gate_state.get("dbg_by_power", 0)) + 1
+            if soc_override:
+                gate_state["dbg_by_soc"] = int(gate_state.get("dbg_by_soc", 0)) + 1
     else:
         # still update soc_low_timer for logging / continuity
         soc_low = (soc == soc) and (soc < (soc_target - params.soc_low_override_mult * soc_band))
@@ -235,6 +246,8 @@ def apply_engine_supervisor_B(
         return solve_step_base_fn(x, **kw)
 
     free_combust = _combust_on(base_free)
+    if prev_combust == 0 and free_combust == 1:
+        gate_state["dbg_free_relight_req"] = int(gate_state.get("dbg_free_relight_req", 0)) + 1
 
     # IMPORTANT:
     # If FREE proposes a COMBUST transition, ALWAYS generate the opposite-biased candidate for comparison.
@@ -282,6 +295,8 @@ def apply_engine_supervisor_B(
 
     # choose best among valid; fallback to best among all if none valid
     valid = [(n, c) for (n, c) in cands if _is_valid(c)]
+    if not valid:
+        gate_state["dbg_no_valid_fallback"] = int(gate_state.get("dbg_no_valid_fallback", 0)) + 1
     pool = valid if valid else cands
 
     best_name, best = min(pool, key=lambda nc: _score_g(nc[1]))
@@ -293,6 +308,15 @@ def apply_engine_supervisor_B(
 
     relight_event = (prev_combust == 0 and cur_combust == 1)
     spin_start_event = (prev_spin == 0 and cur_spin == 1)
+
+    if prev_combust == 0 and cur_combust == 1:
+        gate_state["dbg_best_relight"] = int(gate_state.get("dbg_best_relight", 0)) + 1
+
+    if prev_combust == 0 and free_combust == 1 and cur_combust == 1 and (not allow_relight):
+        gate_state["dbg_not_reflected"] = int(gate_state.get("dbg_not_reflected", 0)) + 1
+
+    if prev_combust == 0 and free_combust == 1 and cur_combust == 1 and allow_relight and (power_override or soc_override):
+        gate_state["dbg_override_kept_relight"] = int(gate_state.get("dbg_override_kept_relight", 0)) + 1
 
     # update gate state
     gate_state["soc_low_timer_s"] = float(soc_low_timer)

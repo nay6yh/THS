@@ -148,6 +148,7 @@ def simulate_ths_grid_B(
     if gate_enabled:
         from .engine_gate_B import EngineGateParams
         gate_params = EngineGateParams.from_dict(engine_gate)
+        print("[GATE PARAMS]", gate_params)
         gate_state = {
             "fuel_on_prev": 0,
             "on_timer_s": 0.0,
@@ -362,6 +363,30 @@ def simulate_ths_grid_B(
 
     ts = pd.DataFrame(rows, columns=PHASE_B_OUTPUT_COLUMN_ORDER)
     validate_column_order(ts, strict=True)
+
+    if gate_enabled and gate_state is not None:
+        dbg_not_reflected = int(gate_state.get('dbg_not_reflected', 0))
+        dbg_override_kept = int(gate_state.get('dbg_override_kept_relight', 0))
+        if dbg_not_reflected > 0:
+            dbg_judge = "not_reflected"
+        elif dbg_override_kept > 0:
+            dbg_judge = "override"
+        else:
+            dbg_judge = "inconclusive"
+
+        print(
+            "[GATE DBG]"
+            f" min_off_hits={int(gate_state.get('dbg_min_off_hits', 0))}"
+            f" overridden={int(gate_state.get('dbg_overridden', 0))}"
+            f" by_power={int(gate_state.get('dbg_by_power', 0))}"
+            f" by_soc={int(gate_state.get('dbg_by_soc', 0))}"
+            f" free_relight_req={int(gate_state.get('dbg_free_relight_req', 0))}"
+            f" best_relight={int(gate_state.get('dbg_best_relight', 0))}"
+            f" no_valid_fallback={int(gate_state.get('dbg_no_valid_fallback', 0))}"
+            f" not_reflected={dbg_not_reflected}"
+            f" override_kept_relight={dbg_override_kept}"
+            f" judge={dbg_judge}"
+        )
 
     # Phase B.0: constraints dataframe left empty (audit_B will own checks later)
     cons = pd.DataFrame()
