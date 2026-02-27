@@ -38,7 +38,7 @@ Separate visualization example:
 
 ```bash
 python scripts/viz_ths_dashboards_phaseB.py \
-  --timeseries artifacts/out_phaseB/<run_id>/signals/timeseries_phaseB_*.csv \
+  --timeseries artifacts/out_phaseB/<run_id>/signals/timeseries_phaseB_<stamp>.csv \
   --outdir artifacts/out_phaseB/<run_id>/Viz \
   --dpi 160
 ```
