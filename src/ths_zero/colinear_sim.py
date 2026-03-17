@@ -11,6 +11,12 @@ from typing import List
 
 
 class ModeRequest(str, Enum):
+    """Supported high-level operating requests for this simplified simulator.
+
+    This enum is intentionally scoped to the currently implemented strategy set
+    and is not an exhaustive taxonomy of all real-world/transitional THS modes.
+    """
+
     EV = "EV"
     HV = "HV"
     CHARGE = "CHARGE"
@@ -116,7 +122,11 @@ class THSColinearSimulator:
         if not x.engine_on_flag or x.mode_request in (ModeRequest.EV, ModeRequest.REGEN):
             Ne = 0.0
         else:
-            Ne = x.engine_speed_target_radps or self.cfg.idle_engine_speed_radps
+            Ne = (
+                self.cfg.idle_engine_speed_radps
+                if x.engine_speed_target_radps is None
+                else x.engine_speed_target_radps
+            )
 
         rho = self.cfg.colinear.rho
         Ng = ((1.0 + rho) * Ne - Np) / rho
@@ -187,7 +197,7 @@ class THSColinearSimulator:
         Pe = t.Te * s.Ne
         Pp = t.Tp * s.Np
         Pm = t.Tm * s.Nm
-        # ideal DC bus sign: positive = battery discharge, negative = battery charge
+        # ideal DC bus sign: positive = battery charge, negative = battery discharge
         battery_power_W = max(Pg, 0.0) + max(Pm, 0.0) - max(-Pg, 0.0) - max(-Pm, 0.0)
         return PowerState(Pg=Pg, Pe=Pe, Pp=Pp, Pm=Pm, battery_power_W=battery_power_W)
 
@@ -202,8 +212,8 @@ class THSColinearSimulator:
             checks.append("EV forward expects Ng < 0 when Ne = 0")
         if mode == ModeRequest.CHARGE and abs(s.Np) < 1e-9 and s.Ng <= 0:
             checks.append("Standstill charging with Ne > 0 expects Ng > 0")
-        if mode == ModeRequest.REGEN and t.Tm <= 0:
-            checks.append("Regen expects Tm > 0 while Nm < 0")
+        if mode == ModeRequest.REGEN and t.Tm >= 0:
+            checks.append("Regen expects Tm < 0 while Nm < 0")
         return checks
 
     @staticmethod

@@ -128,5 +128,24 @@ def test_regen_sign_pattern() -> None:
         )
     )
     assert out.speeds.Nm < 0
+    assert out.torques.Tm < 0
     assert abs(out.balance.rear_balance_W) < 1e-6
-    assert any("Regen expects Tm > 0" in msg for msg in out.sign_checks)
+    assert not any("Regen expects" in msg for msg in out.sign_checks)
+    assert "wheel -> MG2 -> battery" in out.energy_flows
+    assert out.powers.battery_power_W > 0
+
+
+def test_engine_speed_target_zero_is_not_replaced_with_idle() -> None:
+    sim = _sim()
+    out = sim.simulate(
+        SimulationInput(
+            vehicle_speed_mps=6.0,
+            wheel_torque_request_Nm=50.0,
+            mode_request=ModeRequest.HV,
+            engine_on_flag=True,
+            battery_soc=0.5,
+            battery_power_limit_W=30_000.0,
+            engine_speed_target_radps=0.0,
+        )
+    )
+    assert out.speeds.Ne == 0.0
