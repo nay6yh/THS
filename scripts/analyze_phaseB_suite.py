@@ -68,6 +68,31 @@ def main():
             print(f"    TTW_eff={kB.get('TTW_eff')}, regen_utilization={kB.get('regen_utilization')}, EV_share_time={kB.get('EV_share_time')}")
             print(f"    fuel_balance_resid_max_W={kB.get('fuel_balance_resid_max_W')}, bus_balance_resid_max_W={kB.get('bus_balance_resid_max_W')}, soc_recon_resid_max_abs_pct={kB.get('soc_recon_resid_max_abs_pct')}")
 
+    for cmp_name in ["B00b_compare_vs_baseline.json", "B00c_compare_vs_baseline.json"]:
+        cmp_path = os.path.join(root, cmp_name)
+        if not os.path.exists(cmp_path):
+            continue
+        cmp = load_json(cmp_path)
+        print(f"\n=== {cmp_name} ===")
+        print(f"  baseline={cmp.get('baseline')} candidate={cmp.get('candidate')}")
+        print(
+            "  delta: "
+            f"count_eng_start={cmp.get('delta', {}).get('count_eng_start')}, "
+            f"fuel_g_per_km={cmp.get('delta', {}).get('fuel_g_per_km')}, "
+            f"fuel_balance_resid_max_W={cmp.get('delta', {}).get('fuel_balance_resid_max_W')}, "
+            f"bus_balance_resid_max_W={cmp.get('delta', {}).get('bus_balance_resid_max_W')}"
+        )
+        print(f"  criteria={cmp.get('criteria')}")
+
+        gd = cmp.get("gate_debug", {}).get("candidate", {})
+        if gd:
+            print(
+                "  gate_debug(candidate): "
+                f"min_off_hits={gd.get('min_off_hits')}, overridden={gd.get('overridden')}, "
+                f"by_power={gd.get('by_power')}, by_soc={gd.get('by_soc')}, "
+                f"free_relight_req={gd.get('free_relight_req')}, best_relight={gd.get('best_relight')}"
+            )
+
 
 if __name__ == "__main__":
     main()

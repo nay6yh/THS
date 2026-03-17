@@ -17,6 +17,12 @@ From the repository root:
 pip install -e .
 ```
 
+If your environment has import-path drift, run scripts with explicit `PYTHONPATH=src` for reproducibility:
+
+```bash
+PYTHONPATH=src python scripts/run_phaseB_suite.py --wltc_csv data/cycles/WLTC3b.csv --out_dir artifacts/out_phaseB_suite
+```
+
 ## 3) Generate a Phase B run folder
 
 Run the Phase B script:
@@ -64,6 +70,30 @@ If you want simulation and visualization in one shot:
 ```bash
 python scripts/run_phaseB.py --out_root artifacts/out_phaseB --copy_inputs --run_viz --viz_dpi 160
 ```
+
+## Phase B.2 acceptance-oriented comparison flow
+
+1. Run baseline + supervisor variants and determinism check:
+
+```bash
+PYTHONPATH=src python scripts/run_phaseB_suite.py --wltc_csv data/cycles/WLTC3b.csv --out_dir artifacts/out_phaseB_suite
+```
+
+2. Print gate and baseline comparison summaries:
+
+```bash
+PYTHONPATH=src python scripts/analyze_phaseB_suite.py --root artifacts/out_phaseB_suite
+```
+
+The suite now auto-generates baseline comparison JSONs for KPI deltas and gate debug counters:
+
+- `B00b_compare_vs_baseline.json` (start penalty effectiveness / residual preservation)
+- `B00c_compare_vs_baseline.json` (min_on/min_off effectiveness / residual preservation)
+
+These include:
+
+- KPI deltas vs baseline (`count_eng_start`, `fuel_g_per_km`, residual metrics)
+- gate debug counters (`min_off_hits`, `overridden`, `by_power`, `by_soc`, `free_relight_req`, `best_relight`)
 
 ## Ignored output directories
 
