@@ -270,8 +270,9 @@ def simulate_ths_grid_B(
         if gate_enabled and start_event:
             try:
                 dt_s = float(out.get("dt_s", derived.get("dt_s", 1.0)))
-                if dt_s > 0.0 and gate_params is not None and gate_params.start_fuel_g > 0.0:
-                    mdot_add = float(gate_params.start_fuel_g) / dt_s  # [g/s]
+                relight_fuel_g = 0.0 if gate_params is None else float(getattr(gate_params, "relight_fuel_g", 0.0))
+                if dt_s > 0.0 and relight_fuel_g > 0.0:
+                    mdot_add = relight_fuel_g / dt_s  # [g/s]
                     out["mdot_fuel_gps"] = float(out.get("mdot_fuel_gps", 0.0)) + mdot_add
                     P_add = mdot_add * float(lhv_J_per_g)
                     out["P_fuel_W"] = float(out.get("P_fuel_W", 0.0)) + P_add
@@ -388,8 +389,24 @@ def simulate_ths_grid_B(
             f" judge={dbg_judge}"
         )
 
-    # Phase B.0: constraints dataframe left empty (audit_B will own checks later)
-    cons = pd.DataFrame()
+    if gate_enabled and gate_state is not None:
+        cons = pd.DataFrame([
+            {
+                "count_eng_start": int(gate_state.get("count_eng_start", 0)),
+                "count_eng_stop": int(gate_state.get("count_eng_stop", 0)),
+                "start_fuel_total_g": float(gate_state.get("start_fuel_total_g", 0.0)),
+                "min_off_hits": int(gate_state.get("dbg_min_off_hits", 0)),
+                "overridden": int(gate_state.get("dbg_overridden", 0)),
+                "by_power": int(gate_state.get("dbg_by_power", 0)),
+                "by_soc": int(gate_state.get("dbg_by_soc", 0)),
+                "free_relight_req": int(gate_state.get("dbg_free_relight_req", 0)),
+                "best_relight": int(gate_state.get("dbg_best_relight", 0)),
+                "no_valid_fallback": int(gate_state.get("dbg_no_valid_fallback", 0)),
+            }
+        ])
+    else:
+        # Phase B.0: constraints dataframe left empty (audit_B will own checks later)
+        cons = pd.DataFrame()
 
     return ts, cons
 

@@ -311,6 +311,7 @@ def run_once_B(
     *,
     eng_rpm_step: float,
     eng_tq_step: float,
+    engine_gate: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     vdir = os.path.join(out_dir, name)
     _ensure_dir(vdir)
@@ -355,6 +356,7 @@ def run_once_B(
         bsfc_map=bsfc_map_B,
         solve_step_base_fn=solve_step_A_adapter,
         solver_kwargs=solver_kwargs,
+        engine_gate=engine_gate,
     )
 
     # ---- audits ----
@@ -391,7 +393,66 @@ def run_once_B(
     with open(os.path.join(vdir, "gate_detail.json"), "w", encoding="utf-8") as f:
         json.dump(gate_detail, f, indent=2)
 
+    # one-row gate debug counters from simulate_ths_grid_B (if gate enabled)
+    if not cons.empty:
+        cons.to_json(os.path.join(vdir, "gate_counters.json"), orient="records", indent=2)
+
     return {"variant": name, "PASS": bool(okA and okB)}
+
+
+def _load_json(path: str) -> Dict[str, Any]:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _load_gate_counters_or_empty(path: str) -> Dict[str, Any]:
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        rows = json.load(f)
+    if isinstance(rows, list) and rows:
+        return dict(rows[0])
+    return {}
+
+
+def _make_baseline_compare(out_dir: str, baseline_variant: str, candidate_variant: str, out_name: str) -> Dict[str, Any]:
+    base_dir = os.path.join(out_dir, baseline_variant)
+    cand_dir = os.path.join(out_dir, candidate_variant)
+
+    k_base = _load_json(os.path.join(base_dir, "kpis_phaseB.json"))
+    k_cand = _load_json(os.path.join(cand_dir, "kpis_phaseB.json"))
+    g_base = _load_gate_counters_or_empty(os.path.join(base_dir, "gate_counters.json"))
+    g_cand = _load_gate_counters_or_empty(os.path.join(cand_dir, "gate_counters.json"))
+
+    compare = {
+        "baseline": baseline_variant,
+        "candidate": candidate_variant,
+        "delta": {
+            "count_eng_start": float(k_cand.get("count_eng_start", float("nan"))) - float(k_base.get("count_eng_start", float("nan"))),
+            "fuel_g_per_km": float(k_cand.get("fuel_g_per_km", float("nan"))) - float(k_base.get("fuel_g_per_km", float("nan"))),
+            "fuel_balance_resid_max_W": float(k_cand.get("fuel_balance_resid_max_W", float("nan"))) - float(k_base.get("fuel_balance_resid_max_W", float("nan"))),
+            "bus_balance_resid_max_W": float(k_cand.get("bus_balance_resid_max_W", float("nan"))) - float(k_base.get("bus_balance_resid_max_W", float("nan"))),
+            "regen_utilization": float(k_cand.get("regen_utilization", float("nan"))) - float(k_base.get("regen_utilization", float("nan"))),
+        },
+        "gate_debug": {
+            "baseline": g_base,
+            "candidate": g_cand,
+        },
+    }
+
+    compare["criteria"] = {
+        "chattering_reduced": bool(compare["delta"]["count_eng_start"] <= 0.0),
+        "residuals_preserved": bool(
+            float(k_cand.get("fuel_balance_resid_max_W", float("inf"))) <= float(k_base.get("fuel_balance_resid_max_W", float("inf"))) + 1e-9
+            and float(k_cand.get("bus_balance_resid_max_W", float("inf"))) <= float(k_base.get("bus_balance_resid_max_W", float("inf"))) + 1e-9
+        ),
+        "fuel_not_worse": bool(compare["delta"]["fuel_g_per_km"] <= 1e-9),
+    }
+
+    out_path = os.path.join(out_dir, out_name)
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(compare, f, indent=2)
+    return compare
 
 
 def _compare_dicts_close(a: Dict[str, Any], b: Dict[str, Any], *, atol: float = 1e-10, rtol: float = 1e-10) -> Tuple[bool, Dict[str, Any]]:
@@ -440,25 +501,34 @@ def main() -> int:
     # --- Must-PASS set ---
     results.append(run_once_B("B00_baseline", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
 
-    results.append(run_once_B("B01_cold_Tamb-10C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=-10.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
-    results.append(run_once_B("B02_hot_Tamb45C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=45.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    engine_gate_v0 = {
+        "start_fuel_g": 0.30,
+    }
+    engine_gate_v1 = {
+        "start_fuel_g": 0.30,
+        "min_on_s": 8.0,
+        "min_off_s": 2.0,
+        "override_start_power_W": 30_000.0,
+    }
 
-    results.append(run_once_B("B03_lowSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.35), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
-    results.append(run_once_B("B04_highSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.75), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    results.append(run_once_B("B00b_supervisor_start_penalty", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v0))
+    results.append(run_once_B("B00c_supervisor_min_on_off", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
 
-    results.append(run_once_B("B05_high_road_load", wltc, common0, replace(veh0, mass_kg=veh0.mass_kg*1.2, Crr=veh0.Crr*1.3, CdA=veh0.CdA*1.2), batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    results.append(run_once_B("B01_cold_Tamb-10C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=-10.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("B02_hot_Tamb45C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=45.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
 
-    results.append(run_once_B("B07_grid_coarse_200rpm_10Nm", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=200.0, eng_tq_step=10.0))
+    results.append(run_once_B("B03_lowSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.35), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("B04_highSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.75), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+
+    results.append(run_once_B("B05_high_road_load", wltc, common0, replace(veh0, mass_kg=veh0.mass_kg*1.2, Crr=veh0.Crr*1.3, CdA=veh0.CdA*1.2), batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+
+    results.append(run_once_B("B07_grid_coarse_200rpm_10Nm", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=200.0, eng_tq_step=10.0, engine_gate=engine_gate_v1))
 
     # --- Determinism compare (baseline repeated) ---
-    r1 = run_once_B("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
-    r2 = run_once_B("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
+    r1 = run_once_B("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1)
+    r2 = run_once_B("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1)
 
     # Compare KPI jsons
-    def _load_json(p: str) -> Dict[str, Any]:
-        with open(p, "r", encoding="utf-8") as f:
-            return json.load(f)
-
     k1 = _load_json(os.path.join(args.out_dir, "B09_determinism_run1", "kpis_phaseB.json"))
     k2 = _load_json(os.path.join(args.out_dir, "B09_determinism_run2", "kpis_phaseB.json"))
     ok_cmp, diffs = _compare_dicts_close(k1, k2)
@@ -470,9 +540,14 @@ def main() -> int:
 
     results.append({"variant": "B09_determinism_compare", "PASS": bool(ok_cmp)})
 
+    cmp_v0 = _make_baseline_compare(args.out_dir, "B00_baseline", "B00b_supervisor_start_penalty", "B00b_compare_vs_baseline.json")
+    cmp_v1 = _make_baseline_compare(args.out_dir, "B00_baseline", "B00c_supervisor_min_on_off", "B00c_compare_vs_baseline.json")
+    results.append({"variant": "B00b_compare_vs_baseline", "PASS": bool(cmp_v0["criteria"]["residuals_preserved"])})
+    results.append({"variant": "B00c_compare_vs_baseline", "PASS": bool(cmp_v1["criteria"]["chattering_reduced"] and cmp_v1["criteria"]["residuals_preserved"])})
+
     # --- Expected FAIL: force traction shortfall by shrinking MG2 limit ---
     veh_fail = replace(veh0, mg2_tq_max_Nm=max(20.0, veh0.mg2_tq_max_Nm * 0.25))
-    results.append(run_once_B("F01_expected_fail_low_mg2_tq_max", wltc, common0, veh_fail, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    results.append(run_once_B("F01_expected_fail_low_mg2_tq_max", wltc, common0, veh_fail, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
 
     # Turn "expected fail" into a PASS condition if Phase A tracking gates fail (shortfall/E_short)
     gate_f = _load_json(os.path.join(args.out_dir, "F01_expected_fail_low_mg2_tq_max", "gate_detail.json"))
