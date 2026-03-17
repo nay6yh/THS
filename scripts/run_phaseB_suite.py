@@ -479,6 +479,30 @@ def _compare_dicts_close(a: Dict[str, Any], b: Dict[str, Any], *, atol: float = 
     return ok, diffs
 
 
+def _evaluate_determinism_compare(out_dir: str) -> Dict[str, Any]:
+    kpi1_path = os.path.join(out_dir, "B09_determinism_run1", "kpis_phaseB.json")
+    kpi2_path = os.path.join(out_dir, "B09_determinism_run2", "kpis_phaseB.json")
+
+    missing = [path for path in (kpi1_path, kpi2_path) if not os.path.exists(path)]
+    if missing:
+        return {
+            "PASS": False,
+            "primary_failure_reason": "missing_artifact",
+            "note": f"missing KPI artifact(s): {', '.join(missing)}",
+            "diffs": {},
+        }
+
+    k1 = _load_json(kpi1_path)
+    k2 = _load_json(kpi2_path)
+    ok_cmp, diffs = _compare_dicts_close(k1, k2)
+    return {
+        "PASS": bool(ok_cmp),
+        "primary_failure_reason": "pass" if ok_cmp else "determinism_failed",
+        "note": "phaseB KPI JSON equivalence across repeated baseline run",
+        "diffs": diffs,
+    }
+
+
 def _first_failed_gate(gate_section: Dict[str, Any], *, startswith: str | None = None) -> str | None:
     for key, value in gate_section.items():
         if not isinstance(value, dict):
@@ -638,24 +662,19 @@ def main() -> int:
     r1 = append_run("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
     r2 = append_run("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
-    # Compare KPI jsons
-    ok_cmp, diffs = False, {}
-    if r1["PASS"] and r2["PASS"]:
-        k1 = _load_json(os.path.join(args.out_dir, "B09_determinism_run1", "kpis_phaseB.json"))
-        k2 = _load_json(os.path.join(args.out_dir, "B09_determinism_run2", "kpis_phaseB.json"))
-        ok_cmp, diffs = _compare_dicts_close(k1, k2)
+    det_cmp = _evaluate_determinism_compare(args.out_dir)
 
     vdir_cmp = os.path.join(args.out_dir, "B09_determinism_compare")
     _ensure_dir(vdir_cmp)
     with open(os.path.join(vdir_cmp, "compare_ok.json"), "w", encoding="utf-8") as f:
-        json.dump({"PASS": bool(ok_cmp), "diffs": diffs}, f, indent=2)
+        json.dump({"PASS": bool(det_cmp["PASS"]), "diffs": det_cmp["diffs"]}, f, indent=2)
 
     results.append(_new_summary_row(
         variant="B09_determinism_compare",
-        passed=bool(ok_cmp),
+        passed=bool(det_cmp["PASS"]),
         gating_mode="blocking",
-        primary_failure_reason="pass" if ok_cmp else "determinism_failed",
-        note="phaseB KPI JSON equivalence across repeated baseline run",
+        primary_failure_reason=str(det_cmp["primary_failure_reason"]),
+        note=str(det_cmp["note"]),
         blocking=True,
     ))
 

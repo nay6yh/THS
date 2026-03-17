@@ -1,4 +1,5 @@
 import sys
+import tempfile
 from pathlib import Path
 
 _root = Path(__file__).resolve().parent.parent
@@ -50,6 +51,32 @@ class TestPhaseBSuiteTriage(unittest.TestCase):
         self.assertFalse(row["PASS"])
         self.assertEqual(row["gating_mode"], "informational")
         self.assertFalse(row["blocking"])
+
+    def test_determinism_compare_uses_kpis_even_when_runs_fail(self):
+        with tempfile.TemporaryDirectory() as td:
+            out_dir = Path(td)
+            r1 = out_dir / "B09_determinism_run1"
+            r2 = out_dir / "B09_determinism_run2"
+            r1.mkdir(parents=True)
+            r2.mkdir(parents=True)
+            (r1 / "kpis_phaseB.json").write_text('{"fuel_g_per_km": 1.0}', encoding="utf-8")
+            (r2 / "kpis_phaseB.json").write_text('{"fuel_g_per_km": 1.0}', encoding="utf-8")
+
+            result = suite._evaluate_determinism_compare(str(out_dir))
+            self.assertTrue(result["PASS"])
+            self.assertEqual(result["primary_failure_reason"], "pass")
+
+    def test_determinism_compare_reports_missing_artifact(self):
+        with tempfile.TemporaryDirectory() as td:
+            out_dir = Path(td)
+            r1 = out_dir / "B09_determinism_run1"
+            r1.mkdir(parents=True)
+            (r1 / "kpis_phaseB.json").write_text('{"fuel_g_per_km": 1.0}', encoding="utf-8")
+
+            result = suite._evaluate_determinism_compare(str(out_dir))
+            self.assertFalse(result["PASS"])
+            self.assertEqual(result["primary_failure_reason"], "missing_artifact")
+            self.assertIn("B09_determinism_run2/kpis_phaseB.json", result["note"])
 
 
 if __name__ == "__main__":
