@@ -187,6 +187,7 @@ def main():
         w_charge_track=args.w_charge_track,
         w_over_tq=args.w_over_tq,
     )
+    selected_solver_weights = _to_jsonable(weights)
     solver_kwargs = dict(
         weights=weights,
         bsfc_map=constant_bsfc,
@@ -289,6 +290,7 @@ def main():
         batt_cfg_B=_to_jsonable(batt_cfg_B),
         sim_cfg_B=_to_jsonable(sim_cfg_B),
         engine_gate=_to_jsonable(engine_gate),
+        selected_solver_weights=selected_solver_weights,
         solver_kwargs=_to_jsonable({k: v for k, v in solver_kwargs.items() if k not in ("bsfc_map", "eta_mg1_map", "eta_mg2_map", "eng_tq_max_map", "eng_drag_min_map")}),
         bsfc_tag=bsfc_tag,
         wltc_csv=str(wltc_csv),
@@ -345,6 +347,7 @@ def main():
         platform=platform.platform(),
         git_head=_try_git_head(),
         args=vars(args),
+        selected_solver_weights=selected_solver_weights,
         folders=dict(
             run_dir=str(run_dir.resolve()),
             inputs=str(d_inputs.resolve()),
