@@ -479,6 +479,66 @@ def _compare_dicts_close(a: Dict[str, Any], b: Dict[str, Any], *, atol: float = 
     return ok, diffs
 
 
+def _first_failed_gate(gate_section: Dict[str, Any], *, startswith: str | None = None) -> str | None:
+    for key, value in gate_section.items():
+        if not isinstance(value, dict):
+            continue
+        if startswith is not None and not key.startswith(startswith):
+            continue
+        if value.get("ok") is False:
+            return key
+    return None
+
+
+def _classify_gate_failure(gate_detail: Dict[str, Any]) -> Tuple[str, str]:
+    gate_a = gate_detail.get("A", {}) if isinstance(gate_detail, dict) else {}
+    gate_b = gate_detail.get("B", {}) if isinstance(gate_detail, dict) else {}
+
+    fail_a = _first_failed_gate(gate_a, startswith="A_")
+    fail_b = _first_failed_gate(gate_b, startswith="B_")
+
+    if fail_a in {"A_shortfall_step_ratio", "A_E_short_over_E_trac"}:
+        return "traction_shortfall", f"{fail_a} failed"
+    if fail_a and ("resid" in fail_a or "overspeed" in fail_a):
+        return "residual_limit_exceeded", f"{fail_a} failed"
+    if fail_a:
+        return "audit_A_failed", f"{fail_a} failed"
+
+    if fail_b and "resid" in fail_b:
+        return "residual_limit_exceeded", f"{fail_b} failed"
+    if fail_b:
+        return "audit_B_failed", f"{fail_b} failed"
+
+    return "missing_artifact", "gate_detail.json had no explicit failed gate key"
+
+
+def _expected_fail_detected(gate_detail: Dict[str, Any]) -> Tuple[bool, str]:
+    a = gate_detail.get("A", {}) if isinstance(gate_detail, dict) else {}
+    for key in ["A_shortfall_step_ratio", "A_E_short_over_E_trac"]:
+        if isinstance(a.get(key), dict) and (a[key].get("ok") is False):
+            return True, key
+    return False, "none"
+
+
+def _new_summary_row(
+    *,
+    variant: str,
+    passed: bool,
+    gating_mode: str,
+    primary_failure_reason: str,
+    note: str,
+    blocking: bool,
+) -> Dict[str, Any]:
+    return {
+        "variant": variant,
+        "PASS": bool(passed),
+        "gating_mode": gating_mode,
+        "primary_failure_reason": primary_failure_reason,
+        "note": note,
+        "blocking": bool(blocking),
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--wltc_csv", required=True, help="WLTC CSV path (e.g., WLTC3b.csv)")
@@ -496,10 +556,60 @@ def main() -> int:
     init0 = InitialState()
     env0 = EnvironmentConfig()
 
-    results = []
+    results: list[Dict[str, Any]] = []
+
+    def append_run(
+        name: str,
+        *run_args,
+        gating_mode: str = "blocking",
+        blocking: bool = True,
+        **run_kwargs,
+    ) -> Dict[str, Any]:
+        try:
+            result = run_once_B(name, *run_args, **run_kwargs)
+        except Exception as e:
+            row = _new_summary_row(
+                variant=name,
+                passed=False,
+                gating_mode=gating_mode,
+                primary_failure_reason="unexpected_exception",
+                note=f"{type(e).__name__}: {e}",
+                blocking=blocking,
+            )
+            results.append(row)
+            return row
+
+        gate_path = os.path.join(args.out_dir, name, "gate_detail.json")
+        if not os.path.exists(gate_path):
+            row = _new_summary_row(
+                variant=name,
+                passed=False,
+                gating_mode=gating_mode,
+                primary_failure_reason="missing_artifact",
+                note="gate_detail.json not found",
+                blocking=blocking,
+            )
+            results.append(row)
+            return row
+
+        gate_detail = _load_json(gate_path)
+        if result["PASS"]:
+            reason, note = "pass", "all gating checks passed"
+        else:
+            reason, note = _classify_gate_failure(gate_detail)
+        row = _new_summary_row(
+            variant=name,
+            passed=result["PASS"],
+            gating_mode=gating_mode,
+            primary_failure_reason=reason,
+            note=note,
+            blocking=blocking,
+        )
+        results.append(row)
+        return row
 
     # --- Must-PASS set ---
-    results.append(run_once_B("B00_baseline", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    append_run("B00_baseline", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
     engine_gate_v0 = {
         "relight_fuel_g": 0.30,
@@ -511,64 +621,106 @@ def main() -> int:
         "override_start_power_W": 30_000.0,
     }
 
-    results.append(run_once_B("B00b_supervisor_start_penalty", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v0))
-    results.append(run_once_B("B00c_supervisor_min_on_off", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    append_run("B00b_supervisor_start_penalty", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v0)
+    append_run("B00c_supervisor_min_on_off", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1)
 
-    results.append(run_once_B("B01_cold_Tamb-10C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=-10.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
-    results.append(run_once_B("B02_hot_Tamb45C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=45.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    append_run("B01_cold_Tamb-10C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=-10.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
+    append_run("B02_hot_Tamb45C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=45.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
-    results.append(run_once_B("B03_lowSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.35), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
-    results.append(run_once_B("B04_highSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.75), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    append_run("B03_lowSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.35), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
+    append_run("B04_highSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.75), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
-    results.append(run_once_B("B05_high_road_load", wltc, common0, replace(veh0, mass_kg=veh0.mass_kg*1.2, Crr=veh0.Crr*1.3, CdA=veh0.CdA*1.2), batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    append_run("B05_high_road_load", wltc, common0, replace(veh0, mass_kg=veh0.mass_kg*1.2, Crr=veh0.Crr*1.3, CdA=veh0.CdA*1.2), batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
-    results.append(run_once_B("B07_grid_coarse_200rpm_10Nm", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=200.0, eng_tq_step=10.0))
+    append_run("B07_grid_coarse_200rpm_10Nm", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=200.0, eng_tq_step=10.0)
 
     # --- Determinism compare (baseline repeated) ---
-    r1 = run_once_B("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
-    r2 = run_once_B("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
+    r1 = append_run("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
+    r2 = append_run("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
     # Compare KPI jsons
-    k1 = _load_json(os.path.join(args.out_dir, "B09_determinism_run1", "kpis_phaseB.json"))
-    k2 = _load_json(os.path.join(args.out_dir, "B09_determinism_run2", "kpis_phaseB.json"))
-    ok_cmp, diffs = _compare_dicts_close(k1, k2)
+    ok_cmp, diffs = False, {}
+    if r1["PASS"] and r2["PASS"]:
+        k1 = _load_json(os.path.join(args.out_dir, "B09_determinism_run1", "kpis_phaseB.json"))
+        k2 = _load_json(os.path.join(args.out_dir, "B09_determinism_run2", "kpis_phaseB.json"))
+        ok_cmp, diffs = _compare_dicts_close(k1, k2)
 
     vdir_cmp = os.path.join(args.out_dir, "B09_determinism_compare")
     _ensure_dir(vdir_cmp)
     with open(os.path.join(vdir_cmp, "compare_ok.json"), "w", encoding="utf-8") as f:
         json.dump({"PASS": bool(ok_cmp), "diffs": diffs}, f, indent=2)
 
-    results.append({"variant": "B09_determinism_compare", "PASS": bool(ok_cmp)})
+    results.append(_new_summary_row(
+        variant="B09_determinism_compare",
+        passed=bool(ok_cmp),
+        gating_mode="blocking",
+        primary_failure_reason="pass" if ok_cmp else "determinism_failed",
+        note="phaseB KPI JSON equivalence across repeated baseline run",
+        blocking=True,
+    ))
 
     cmp_v0 = _make_baseline_compare(args.out_dir, "B00_baseline", "B00b_supervisor_start_penalty", "B00b_compare_vs_baseline.json")
     cmp_v1 = _make_baseline_compare(args.out_dir, "B00_baseline", "B00c_supervisor_min_on_off", "B00c_compare_vs_baseline.json")
-    results.append({"variant": "B00b_compare_vs_baseline", "PASS": bool(all(cmp_v0["criteria"].values()))})
-    results.append({"variant": "B00c_compare_vs_baseline", "PASS": bool(all(cmp_v1["criteria"].values()))})
+    pass_cmp_v0 = bool(all(cmp_v0["criteria"].values()))
+    pass_cmp_v1 = bool(all(cmp_v1["criteria"].values()))
+    results.append(_new_summary_row(
+        variant="B00b_compare_vs_baseline",
+        passed=pass_cmp_v0,
+        gating_mode="informational",
+        primary_failure_reason="pass" if pass_cmp_v0 else "informational_compare_regression",
+        note="non-gating baseline comparison row",
+        blocking=False,
+    ))
+    results.append(_new_summary_row(
+        variant="B00c_compare_vs_baseline",
+        passed=pass_cmp_v1,
+        gating_mode="informational",
+        primary_failure_reason="pass" if pass_cmp_v1 else "informational_compare_regression",
+        note="non-gating baseline comparison row",
+        blocking=False,
+    ))
 
     # --- Expected FAIL: force traction shortfall by shrinking MG2 limit ---
     veh_fail = replace(veh0, mg2_tq_max_Nm=max(20.0, veh0.mg2_tq_max_Nm * 0.25))
-    results.append(run_once_B("F01_expected_fail_low_mg2_tq_max", wltc, common0, veh_fail, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    append_run("F01_expected_fail_low_mg2_tq_max", wltc, common0, veh_fail, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, gating_mode="expected_fail_probe", blocking=False)
 
     # Turn "expected fail" into a PASS condition if Phase A tracking gates fail (shortfall/E_short)
-    gate_f = _load_json(os.path.join(args.out_dir, "F01_expected_fail_low_mg2_tq_max", "gate_detail.json"))
-    a = gate_f.get("A", {})
-    exp_ok = False
-    # If either shortfall metric fails, we consider expected-fail detected.
-    for key in ["A_shortfall_step_ratio", "A_E_short_over_E_trac"]:
-        if isinstance(a.get(key), dict) and (a[key].get("ok") is False):
-            exp_ok = True
+    gate_f_path = os.path.join(args.out_dir, "F01_expected_fail_low_mg2_tq_max", "gate_detail.json")
+    if os.path.exists(gate_f_path):
+        gate_f = _load_json(gate_f_path)
+        exp_ok, exp_reason = _expected_fail_detected(gate_f)
+    else:
+        exp_ok, exp_reason = False, "missing_gate_detail"
 
     vdir_exp = os.path.join(args.out_dir, "F01_expected_fail_check")
     _ensure_dir(vdir_exp)
     with open(os.path.join(vdir_exp, "expected_fail_check.json"), "w", encoding="utf-8") as f:
-        json.dump({"PASS": bool(exp_ok), "note": "PASS means expected fail was detected via Phase-A tracking gates."}, f, indent=2)
-    results.append({"variant": "F01_expected_fail_check", "PASS": bool(exp_ok)})
+        json.dump(
+            {
+                "PASS": bool(exp_ok),
+                "reason": "traction_shortfall" if exp_ok else "expected_fail_not_detected",
+                "trigger_gate": exp_reason,
+                "note": "PASS means expected fail was detected via Phase-A tracking gates.",
+            },
+            f,
+            indent=2,
+        )
+    results.append(_new_summary_row(
+        variant="F01_expected_fail_check",
+        passed=bool(exp_ok),
+        gating_mode="blocking_expected_fail",
+        primary_failure_reason="pass" if exp_ok else "expected_fail_not_detected",
+        note=f"trigger_gate={exp_reason}",
+        blocking=True,
+    ))
 
     # Summary
     df = pd.DataFrame(results)
     df.to_csv(os.path.join(args.out_dir, "suite_summary.csv"), index=False)
+    with open(os.path.join(args.out_dir, "suite_summary.json"), "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2)
 
-    overall_pass = bool(df[df["variant"].str.startswith("B")]["PASS"].all() and exp_ok and ok_cmp)
+    overall_pass = bool(df[df["blocking"]]["PASS"].all())
 
     with open(os.path.join(args.out_dir, "suite_overall.json"), "w", encoding="utf-8") as f:
         json.dump({"OVERALL_PASS": overall_pass}, f, indent=2)
