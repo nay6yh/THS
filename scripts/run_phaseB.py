@@ -140,6 +140,17 @@ def build_argparser() -> argparse.ArgumentParser:
     ap.add_argument("--run_viz", action="store_true", help="Run visualization after simulation into Viz/")
     ap.add_argument("--viz_dpi", type=int, default=160)
 
+    # Step A objective weights (for Phase B sweep/tuning without modifying Phase A code)
+    default_weights = StepWeights()
+    ap.add_argument("--w_fuel", type=float, default=default_weights.w_fuel, help="Step A weight: fuel term")
+    ap.add_argument("--w_soc", type=float, default=default_weights.w_soc, help="Step A weight: SOC guard")
+    ap.add_argument("--w_fric", type=float, default=default_weights.w_fric, help="Step A weight: friction loss")
+    ap.add_argument("--w_short_tq", type=float, default=default_weights.w_short_tq, help="Step A weight: torque shortfall")
+    ap.add_argument("--w_spin", type=float, default=default_weights.w_spin, help="Step A weight: engine spin")
+    ap.add_argument("--w_smooth", type=float, default=default_weights.w_smooth, help="Step A weight: smoothness")
+    ap.add_argument("--w_charge_track", type=float, default=default_weights.w_charge_track, help="Step A weight: charge tracking")
+    ap.add_argument("--w_over_tq", type=float, default=default_weights.w_over_tq, help="Step A weight: over torque")
+
     return ap
 
 
@@ -166,7 +177,17 @@ def main():
     env = EnvironmentConfig()
 
     # ---- Phase A solver kwargs ----
-    weights = StepWeights()
+    weights = StepWeights(
+        w_fuel=args.w_fuel,
+        w_soc=args.w_soc,
+        w_fric=args.w_fric,
+        w_short_tq=args.w_short_tq,
+        w_spin=args.w_spin,
+        w_smooth=args.w_smooth,
+        w_charge_track=args.w_charge_track,
+        w_over_tq=args.w_over_tq,
+    )
+    selected_solver_weights = _to_jsonable(weights)
     solver_kwargs = dict(
         weights=weights,
         bsfc_map=constant_bsfc,
@@ -269,6 +290,7 @@ def main():
         batt_cfg_B=_to_jsonable(batt_cfg_B),
         sim_cfg_B=_to_jsonable(sim_cfg_B),
         engine_gate=_to_jsonable(engine_gate),
+        selected_solver_weights=selected_solver_weights,
         solver_kwargs=_to_jsonable({k: v for k, v in solver_kwargs.items() if k not in ("bsfc_map", "eta_mg1_map", "eta_mg2_map", "eng_tq_max_map", "eng_drag_min_map")}),
         bsfc_tag=bsfc_tag,
         wltc_csv=str(wltc_csv),
@@ -325,6 +347,7 @@ def main():
         platform=platform.platform(),
         git_head=_try_git_head(),
         args=vars(args),
+        selected_solver_weights=selected_solver_weights,
         folders=dict(
             run_dir=str(run_dir.resolve()),
             inputs=str(d_inputs.resolve()),
