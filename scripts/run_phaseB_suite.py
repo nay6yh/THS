@@ -502,10 +502,10 @@ def main() -> int:
     results.append(run_once_B("B00_baseline", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
 
     engine_gate_v0 = {
-        "start_fuel_g": 0.30,
+        "relight_fuel_g": 0.30,
     }
     engine_gate_v1 = {
-        "start_fuel_g": 0.30,
+        "relight_fuel_g": 0.30,
         "min_on_s": 8.0,
         "min_off_s": 2.0,
         "override_start_power_W": 30_000.0,
@@ -514,19 +514,19 @@ def main() -> int:
     results.append(run_once_B("B00b_supervisor_start_penalty", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v0))
     results.append(run_once_B("B00c_supervisor_min_on_off", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
 
-    results.append(run_once_B("B01_cold_Tamb-10C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=-10.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
-    results.append(run_once_B("B02_hot_Tamb45C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=45.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("B01_cold_Tamb-10C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=-10.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    results.append(run_once_B("B02_hot_Tamb45C", wltc, common0, veh0, batt0, init0, replace(env0, Tamb_C=45.0), args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
 
-    results.append(run_once_B("B03_lowSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.35), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
-    results.append(run_once_B("B04_highSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.75), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("B03_lowSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.35), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
+    results.append(run_once_B("B04_highSOC_start", wltc, common0, veh0, batt0, replace(init0, soc0=0.75), env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
 
-    results.append(run_once_B("B05_high_road_load", wltc, common0, replace(veh0, mass_kg=veh0.mass_kg*1.2, Crr=veh0.Crr*1.3, CdA=veh0.CdA*1.2), batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("B05_high_road_load", wltc, common0, replace(veh0, mass_kg=veh0.mass_kg*1.2, Crr=veh0.Crr*1.3, CdA=veh0.CdA*1.2), batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
 
-    results.append(run_once_B("B07_grid_coarse_200rpm_10Nm", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=200.0, eng_tq_step=10.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("B07_grid_coarse_200rpm_10Nm", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=200.0, eng_tq_step=10.0))
 
     # --- Determinism compare (baseline repeated) ---
-    r1 = run_once_B("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1)
-    r2 = run_once_B("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1)
+    r1 = run_once_B("B09_determinism_run1", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
+    r2 = run_once_B("B09_determinism_run2", wltc, common0, veh0, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0)
 
     # Compare KPI jsons
     k1 = _load_json(os.path.join(args.out_dir, "B09_determinism_run1", "kpis_phaseB.json"))
@@ -542,12 +542,12 @@ def main() -> int:
 
     cmp_v0 = _make_baseline_compare(args.out_dir, "B00_baseline", "B00b_supervisor_start_penalty", "B00b_compare_vs_baseline.json")
     cmp_v1 = _make_baseline_compare(args.out_dir, "B00_baseline", "B00c_supervisor_min_on_off", "B00c_compare_vs_baseline.json")
-    results.append({"variant": "B00b_compare_vs_baseline", "PASS": bool(cmp_v0["criteria"]["residuals_preserved"])})
-    results.append({"variant": "B00c_compare_vs_baseline", "PASS": bool(cmp_v1["criteria"]["chattering_reduced"] and cmp_v1["criteria"]["residuals_preserved"])})
+    results.append({"variant": "B00b_compare_vs_baseline", "PASS": bool(all(cmp_v0["criteria"].values()))})
+    results.append({"variant": "B00c_compare_vs_baseline", "PASS": bool(all(cmp_v1["criteria"].values()))})
 
     # --- Expected FAIL: force traction shortfall by shrinking MG2 limit ---
     veh_fail = replace(veh0, mg2_tq_max_Nm=max(20.0, veh0.mg2_tq_max_Nm * 0.25))
-    results.append(run_once_B("F01_expected_fail_low_mg2_tq_max", wltc, common0, veh_fail, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0, engine_gate=engine_gate_v1))
+    results.append(run_once_B("F01_expected_fail_low_mg2_tq_max", wltc, common0, veh_fail, batt0, init0, env0, args.out_dir, eng_rpm_step=100.0, eng_tq_step=5.0))
 
     # Turn "expected fail" into a PASS condition if Phase A tracking gates fail (shortfall/E_short)
     gate_f = _load_json(os.path.join(args.out_dir, "F01_expected_fail_low_mg2_tq_max", "gate_detail.json"))
