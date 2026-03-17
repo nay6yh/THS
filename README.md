@@ -95,6 +95,17 @@ These include:
 - KPI deltas vs baseline (`count_eng_start`, `fuel_g_per_km`, residual metrics)
 - gate debug counters (`min_off_hits`, `overridden`, `by_power`, `by_soc`, `free_relight_req`, `best_relight`)
 
+Suite summary now also includes structured triage fields per variant in `suite_summary.csv` (and mirrored in `suite_summary.json`):
+
+- `variant`
+- `PASS`
+- `gating_mode` (`blocking`, `informational`, `expected_fail_probe`, or `blocking_expected_fail`)
+- `primary_failure_reason` (`pass`, `traction_shortfall`, `residual_limit_exceeded`, `audit_A_failed`, `audit_B_failed`, `determinism_failed`, `expected_fail_not_detected`, etc.)
+- `note` (short per-row detail)
+- `blocking` (whether that row contributes to `OVERALL_PASS`)
+
+`F01_expected_fail_low_mg2_tq_max` and `F01_expected_fail_check` are now easier to read together via `expected_fail_check.json`, which records both the expected-fail verdict and the trigger gate key.
+
 ## Ignored output directories
 
 The following directories are output/archive locations and should be treated as ignored (not committed source):
