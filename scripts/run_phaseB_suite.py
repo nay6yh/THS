@@ -478,17 +478,20 @@ def _compare_dicts_close(a: Dict[str, Any], b: Dict[str, Any], *, atol: float = 
                 diffs[k] = {"a": va, "b": vb, "ok": False}
     return ok, diffs
 
-
 def _evaluate_determinism_compare(out_dir: str) -> Dict[str, Any]:
     kpi1_path = os.path.join(out_dir, "B09_determinism_run1", "kpis_phaseB.json")
     kpi2_path = os.path.join(out_dir, "B09_determinism_run2", "kpis_phaseB.json")
 
     missing = [path for path in (kpi1_path, kpi2_path) if not os.path.exists(path)]
     if missing:
+        missing_rel = [
+            os.path.relpath(path, out_dir).replace(os.sep, "/")
+            for path in missing
+        ]
         return {
             "PASS": False,
             "primary_failure_reason": "missing_artifact",
-            "note": f"missing KPI artifact(s): {', '.join(missing)}",
+            "note": f"missing KPI artifact(s): {', '.join(missing_rel)}",
             "diffs": {},
         }
 
