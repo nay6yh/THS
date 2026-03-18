@@ -1,3 +1,4 @@
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -73,6 +74,22 @@ class TestPhaseBSuiteTriage(unittest.TestCase):
         self.assertEqual(row["primary_failed_value"], 30.7)
         self.assertEqual(row["primary_failed_thr"], 0.01)
         self.assertEqual(row["secondary_failed_gates"], "")
+
+
+    def test_summary_json_uses_null_for_missing_triage_values(self):
+        row = suite._new_summary_row(
+            variant="B00b_compare_vs_baseline",
+            passed=True,
+            gating_mode="informational",
+            primary_failure_reason="pass",
+            note="all gating checks passed",
+            blocking=False,
+        )
+        payload = json.dumps([row], allow_nan=False)
+        self.assertIn('"primary_failed_value": null', payload)
+        self.assertIn('"primary_failed_thr": null', payload)
+        self.assertNotIn('NaN', payload)
+
     def test_informational_row_is_non_blocking(self):
         row = suite._new_summary_row(
             variant="B00b_compare_vs_baseline",

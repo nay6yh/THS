@@ -580,8 +580,8 @@ def _classify_gate_failure_detail(gate_detail: Dict[str, Any]) -> Dict[str, Any]
         "reason": reason,
         "note": note,
         "primary_failed_gate": str(primary.get("gate", "")),
-        "primary_failed_value": primary.get("value", float("nan")),
-        "primary_failed_thr": primary.get("thr", float("nan")),
+        "primary_failed_value": primary.get("value", None),
+        "primary_failed_thr": primary.get("thr", None),
         "secondary_failed_gates": "|".join(secondary),
     }
 
@@ -603,8 +603,8 @@ def _new_summary_row(
     note: str,
     blocking: bool,
     primary_failed_gate: str = "",
-    primary_failed_value: float = float("nan"),
-    primary_failed_thr: Any = float("nan"),
+    primary_failed_value: Any = None,
+    primary_failed_thr: Any = None,
     secondary_failed_gates: str = "",
 ) -> Dict[str, Any]:
     return {
@@ -679,8 +679,8 @@ def main() -> int:
             reason, note = "pass", "all gating checks passed"
             fail_detail = {
                 "primary_failed_gate": "",
-                "primary_failed_value": float("nan"),
-                "primary_failed_thr": float("nan"),
+                "primary_failed_value": None,
+                "primary_failed_thr": None,
                 "secondary_failed_gates": "",
             }
         else:
@@ -806,7 +806,7 @@ def main() -> int:
     df = pd.DataFrame(results)
     df.to_csv(os.path.join(args.out_dir, "suite_summary.csv"), index=False)
     with open(os.path.join(args.out_dir, "suite_summary.json"), "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2)
+        json.dump(results, f, indent=2, allow_nan=False)
 
     overall_pass = bool(df[df["blocking"]]["PASS"].all())
 
