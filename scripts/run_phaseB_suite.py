@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from dataclasses import asdict, replace
 from typing import Any, Dict, Tuple, Callable
@@ -517,26 +518,79 @@ def _first_failed_gate(gate_section: Dict[str, Any], *, startswith: str | None =
     return None
 
 
+def _json_safe_triage_value(value: Any) -> Any:
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
+def _collect_failed_gates(gate_detail: Dict[str, Any]) -> list[Dict[str, Any]]:
+    gate_a = gate_detail.get("A", {}) if isinstance(gate_detail, dict) else {}
+    gate_b = gate_detail.get("B", {}) if isinstance(gate_detail, dict) else {}
+
+    failed: list[Dict[str, Any]] = []
+    for section_name, section in (("A", gate_a), ("B", gate_b)):
+        if not isinstance(section, dict):
+            continue
+        for key, value in section.items():
+            if not isinstance(value, dict):
+                continue
+            if value.get("ok") is False:
+                failed.append(
+                    {
+                        "section": section_name,
+                        "gate": key,
+                        "value": _json_safe_triage_value(value.get("value", None)),
+                        "thr": _json_safe_triage_value(value.get("thr", None)),
+                    }
+                )
+    return failed
+
+
 def _classify_gate_failure(gate_detail: Dict[str, Any]) -> Tuple[str, str]:
+    detail = _classify_gate_failure_detail(gate_detail)
+    return str(detail["reason"]), str(detail["note"])
+
+
+def _classify_gate_failure_detail(gate_detail: Dict[str, Any]) -> Dict[str, Any]:
     gate_a = gate_detail.get("A", {}) if isinstance(gate_detail, dict) else {}
     gate_b = gate_detail.get("B", {}) if isinstance(gate_detail, dict) else {}
 
     fail_a = _first_failed_gate(gate_a, startswith="A_")
     fail_b = _first_failed_gate(gate_b, startswith="B_")
 
+    failed = _collect_failed_gates(gate_detail)
+    primary = failed[0] if failed else {}
+    secondary = [str(x.get("gate")) for x in failed[1:] if x.get("gate")]
+
+    reason = "missing_artifact"
     if fail_a in {"A_shortfall_step_ratio", "A_E_short_over_E_trac"}:
-        return "traction_shortfall", f"{fail_a} failed"
-    if fail_a and ("resid" in fail_a or "overspeed" in fail_a):
-        return "residual_limit_exceeded", f"{fail_a} failed"
-    if fail_a:
-        return "audit_A_failed", f"{fail_a} failed"
+        reason = "traction_shortfall"
+    elif fail_a and ("resid" in fail_a or "overspeed" in fail_a):
+        reason = "residual_limit_exceeded"
+    elif fail_a:
+        reason = "audit_A_failed"
+    elif fail_b and "resid" in fail_b:
+        reason = "residual_limit_exceeded"
+    elif fail_b:
+        reason = "audit_B_failed"
 
-    if fail_b and "resid" in fail_b:
-        return "residual_limit_exceeded", f"{fail_b} failed"
-    if fail_b:
-        return "audit_B_failed", f"{fail_b} failed"
+    if primary:
+        note = (
+            f"{primary['gate']} failed "
+            f"(value={primary['value']}, thr={primary['thr']})"
+        )
+    else:
+        note = "gate_detail.json had no explicit failed gate key"
 
-    return "missing_artifact", "gate_detail.json had no explicit failed gate key"
+    return {
+        "reason": reason,
+        "note": note,
+        "primary_failed_gate": str(primary.get("gate", "")),
+        "primary_failed_value": _json_safe_triage_value(primary.get("value", None)),
+        "primary_failed_thr": _json_safe_triage_value(primary.get("thr", None)),
+        "secondary_failed_gates": "|".join(secondary),
+    }
 
 
 def _expected_fail_detected(gate_detail: Dict[str, Any]) -> Tuple[bool, str]:
@@ -555,6 +609,10 @@ def _new_summary_row(
     primary_failure_reason: str,
     note: str,
     blocking: bool,
+    primary_failed_gate: str = "",
+    primary_failed_value: Any = None,
+    primary_failed_thr: Any = None,
+    secondary_failed_gates: str = "",
 ) -> Dict[str, Any]:
     return {
         "variant": variant,
@@ -563,6 +621,10 @@ def _new_summary_row(
         "primary_failure_reason": primary_failure_reason,
         "note": note,
         "blocking": bool(blocking),
+        "primary_failed_gate": primary_failed_gate,
+        "primary_failed_value": primary_failed_value,
+        "primary_failed_thr": primary_failed_thr,
+        "secondary_failed_gates": secondary_failed_gates,
     }
 
 
@@ -622,8 +684,15 @@ def main() -> int:
         gate_detail = _load_json(gate_path)
         if result["PASS"]:
             reason, note = "pass", "all gating checks passed"
+            fail_detail = {
+                "primary_failed_gate": "",
+                "primary_failed_value": None,
+                "primary_failed_thr": None,
+                "secondary_failed_gates": "",
+            }
         else:
-            reason, note = _classify_gate_failure(gate_detail)
+            fail_detail = _classify_gate_failure_detail(gate_detail)
+            reason, note = str(fail_detail["reason"]), str(fail_detail["note"])
         row = _new_summary_row(
             variant=name,
             passed=result["PASS"],
@@ -631,6 +700,10 @@ def main() -> int:
             primary_failure_reason=reason,
             note=note,
             blocking=blocking,
+            primary_failed_gate=str(fail_detail["primary_failed_gate"]),
+            primary_failed_value=fail_detail["primary_failed_value"],
+            primary_failed_thr=fail_detail["primary_failed_thr"],
+            secondary_failed_gates=str(fail_detail["secondary_failed_gates"]),
         )
         results.append(row)
         return row
@@ -740,7 +813,7 @@ def main() -> int:
     df = pd.DataFrame(results)
     df.to_csv(os.path.join(args.out_dir, "suite_summary.csv"), index=False)
     with open(os.path.join(args.out_dir, "suite_summary.json"), "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2)
+        json.dump(results, f, indent=2, allow_nan=False)
 
     overall_pass = bool(df[df["blocking"]]["PASS"].all())
 
