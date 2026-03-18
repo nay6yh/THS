@@ -101,8 +101,12 @@ Suite summary now also includes structured triage fields per variant in `suite_s
 - `PASS`
 - `gating_mode` (`blocking`, `informational`, `expected_fail_probe`, or `blocking_expected_fail`)
 - `primary_failure_reason` (`pass`, `traction_shortfall`, `residual_limit_exceeded`, `audit_A_failed`, `audit_B_failed`, `determinism_failed`, `expected_fail_not_detected`, etc.)
-- `note` (short per-row detail)
+- `note` (short per-row detail including primary failed gate value/threshold when available)
 - `blocking` (whether that row contributes to `OVERALL_PASS`)
+- `primary_failed_gate` (first failed gate key in evaluation order; empty on PASS)
+- `primary_failed_value` (observed value for `primary_failed_gate`; NaN on PASS)
+- `primary_failed_thr` (threshold for `primary_failed_gate`; NaN on PASS)
+- `secondary_failed_gates` (`|`-joined remaining failed gate keys, if any)
 
 `F01_expected_fail_low_mg2_tq_max` and `F01_expected_fail_check` are now easier to read together via `expected_fail_check.json`, which records both the expected-fail verdict and the trigger gate key.
 

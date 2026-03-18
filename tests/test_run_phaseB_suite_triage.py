@@ -39,6 +39,40 @@ class TestPhaseBSuiteTriage(unittest.TestCase):
         self.assertTrue(ok)
         self.assertEqual(trigger, "A_E_short_over_E_trac")
 
+
+    def test_classify_failure_detail_includes_primary_and_secondary(self):
+        gate_detail = {
+            "A": {
+                "A_psd_speed_resid_max_rpm": {"ok": False, "value": 301.0, "thr": 300.0},
+            },
+            "B": {
+                "B_soc_recon_resid_max_abs_pct": {"ok": False, "value": 30.7, "thr": 0.01},
+            },
+            "PASS": False,
+        }
+        detail = suite._classify_gate_failure_detail(gate_detail)
+        self.assertEqual(detail["reason"], "residual_limit_exceeded")
+        self.assertEqual(detail["primary_failed_gate"], "A_psd_speed_resid_max_rpm")
+        self.assertEqual(detail["secondary_failed_gates"], "B_soc_recon_resid_max_abs_pct")
+        self.assertIn("value=301.0", detail["note"])
+
+    def test_summary_row_exposes_triage_columns(self):
+        row = suite._new_summary_row(
+            variant="B00_baseline",
+            passed=False,
+            gating_mode="blocking",
+            primary_failure_reason="residual_limit_exceeded",
+            note="B_soc_recon_resid_max_abs_pct failed (value=30.7, thr=0.01)",
+            blocking=True,
+            primary_failed_gate="B_soc_recon_resid_max_abs_pct",
+            primary_failed_value=30.7,
+            primary_failed_thr=0.01,
+            secondary_failed_gates="",
+        )
+        self.assertEqual(row["primary_failed_gate"], "B_soc_recon_resid_max_abs_pct")
+        self.assertEqual(row["primary_failed_value"], 30.7)
+        self.assertEqual(row["primary_failed_thr"], 0.01)
+        self.assertEqual(row["secondary_failed_gates"], "")
     def test_informational_row_is_non_blocking(self):
         row = suite._new_summary_row(
             variant="B00b_compare_vs_baseline",
