@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from dataclasses import asdict, replace
 from typing import Any, Dict, Tuple, Callable
@@ -517,6 +518,12 @@ def _first_failed_gate(gate_section: Dict[str, Any], *, startswith: str | None =
     return None
 
 
+def _json_safe_triage_value(value: Any) -> Any:
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
 def _collect_failed_gates(gate_detail: Dict[str, Any]) -> list[Dict[str, Any]]:
     gate_a = gate_detail.get("A", {}) if isinstance(gate_detail, dict) else {}
     gate_b = gate_detail.get("B", {}) if isinstance(gate_detail, dict) else {}
@@ -533,8 +540,8 @@ def _collect_failed_gates(gate_detail: Dict[str, Any]) -> list[Dict[str, Any]]:
                     {
                         "section": section_name,
                         "gate": key,
-                        "value": value.get("value", float("nan")),
-                        "thr": value.get("thr", float("nan")),
+                        "value": _json_safe_triage_value(value.get("value", None)),
+                        "thr": _json_safe_triage_value(value.get("thr", None)),
                     }
                 )
     return failed
@@ -580,8 +587,8 @@ def _classify_gate_failure_detail(gate_detail: Dict[str, Any]) -> Dict[str, Any]
         "reason": reason,
         "note": note,
         "primary_failed_gate": str(primary.get("gate", "")),
-        "primary_failed_value": primary.get("value", None),
-        "primary_failed_thr": primary.get("thr", None),
+        "primary_failed_value": _json_safe_triage_value(primary.get("value", None)),
+        "primary_failed_thr": _json_safe_triage_value(primary.get("thr", None)),
         "secondary_failed_gates": "|".join(secondary),
     }
 

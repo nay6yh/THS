@@ -76,6 +76,35 @@ class TestPhaseBSuiteTriage(unittest.TestCase):
         self.assertEqual(row["secondary_failed_gates"], "")
 
 
+
+    def test_failed_row_json_serialization_sanitizes_non_finite_triage_values(self):
+        gate_detail = {
+            "A": {
+                "A_psd_speed_resid_max_rpm": {"ok": False, "value": float("nan"), "thr": float("inf")},
+            },
+            "B": {},
+            "PASS": False,
+        }
+        detail = suite._classify_gate_failure_detail(gate_detail)
+        row = suite._new_summary_row(
+            variant="B00_baseline",
+            passed=False,
+            gating_mode="blocking",
+            primary_failure_reason=detail["reason"],
+            note=detail["note"],
+            blocking=True,
+            primary_failed_gate=detail["primary_failed_gate"],
+            primary_failed_value=detail["primary_failed_value"],
+            primary_failed_thr=detail["primary_failed_thr"],
+            secondary_failed_gates=detail["secondary_failed_gates"],
+        )
+
+        payload = json.dumps([row], allow_nan=False)
+        self.assertIn('"primary_failed_value": null', payload)
+        self.assertIn('"primary_failed_thr": null', payload)
+        self.assertNotIn('NaN', payload)
+        self.assertNotIn('Infinity', payload)
+
     def test_summary_json_uses_null_for_missing_triage_values(self):
         row = suite._new_summary_row(
             variant="B00b_compare_vs_baseline",
