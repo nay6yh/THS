@@ -18,8 +18,9 @@ class TestAuditB(unittest.TestCase):
         dt_s = [1.0, 1.0, 1.0]
         E_usable = [1000.0, 1000.0, 1000.0]
 
-        # Use P_batt_chem = 3600 W for 1s -> 1 Wh discharge on first interval
-        P_batt_chem = [3600.0, 0.0, 0.0]
+        # End-of-step recurrence uses current row k (k>=1): E[k]=E[k-1]-P[k]*dt[k]/3600
+        # Keep row 0 unconstrained by reconstruction semantics.
+        P_batt_chem = [0.0, 3600.0, 0.0]
         E_batt = [500.0, 499.0, 499.0]
         soc_pct = [50.0, 49.9, 49.9]
 
@@ -153,6 +154,41 @@ class TestAuditB(unittest.TestCase):
         old_resid = old_soc_rec - ts["soc_pct"]
         old_resid.iloc[0] = 0.0  # same k=0 convention as the audit residual
         self.assertGreater(np.max(np.abs(old_resid.iloc[1:].to_numpy())), 1.0)
+
+    def test_soc_recon_uses_current_row_end_of_step_indexing(self):
+        # Nonzero chemical power at multiple consecutive k values disambiguates k vs k-1.
+        dt_s = np.array([1.0, 2.0, 4.0, 3.0, 1.0], dtype=float)
+        p_chem = np.array([0.0, 1800.0, 3600.0, 7200.0, 0.0], dtype=float)
+        e0 = 500.0
+
+        e_batt = [e0]
+        for k in range(1, len(dt_s)):
+            e_batt.append(e_batt[-1] - (p_chem[k] * dt_s[k] / 3600.0))
+        e_batt = np.array(e_batt, dtype=float)
+        soc_pct = e_batt / 10.0  # E_usable=1000 Wh, Emin=0 Wh
+
+        ts_template = self._make_ts().iloc[[0]].copy()
+        ts = pd.concat([ts_template.copy() for _ in range(len(dt_s))], ignore_index=True)
+        ts["dt_s"] = dt_s
+        ts["P_batt_chem_W"] = p_chem
+        ts["E_batt_Wh"] = e_batt
+        ts["soc_pct"] = soc_pct
+        ts["batt_E_usable_Wh"] = 1000.0
+        ts["batt_Emin_Wh"] = 0.0
+        ts["batt_Emax_Wh"] = 1000.0
+
+        resid = compute_soc_reconstruction_residual_B(ts).to_numpy()
+        self.assertTrue(np.all(np.abs(resid) < 1e-9))
+
+        # If lagged indexing (k-1) were used, this synthetic case would not be near zero.
+        e_rec_lag = np.empty_like(e_batt)
+        e_rec_lag[0] = e_batt[0]
+        for k in range(1, len(e_rec_lag)):
+            e_rec_lag[k] = e_rec_lag[k - 1] - (p_chem[k - 1] * dt_s[k - 1] / 3600.0)
+        soc_lag = e_rec_lag / 10.0
+        resid_lag = soc_lag - soc_pct
+        resid_lag[0] = 0.0
+        self.assertGreater(np.max(np.abs(resid_lag[1:])), 0.05)
 
     def test_compute_audit_outputs(self):
         ts = self._make_ts()
