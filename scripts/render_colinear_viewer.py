@@ -10,20 +10,20 @@ import pandas as pd
 
 
 def _find_timeseries_csv(run_dir: Path) -> Path:
-    signals_dir = run_dir / "signals"
+    signals_dir = run_dir
     if not signals_dir.exists():
         raise FileNotFoundError(f"signals directory not found under run_dir: {signals_dir}")
 
-    derived = sorted(signals_dir.glob("timeseries_phaseB_derived_*.csv"))
+    derived = sorted(signals_dir.glob("timeseries*.csv"))
     if derived:
         return derived[-1]
 
-    canonical = sorted(signals_dir.glob("timeseries_phaseB_*.csv"))
+    canonical = sorted(signals_dir.glob("timeseries*.csv"))
     canonical = [p for p in canonical if "derived" not in p.name]
     if canonical:
         return canonical[-1]
 
-    raise FileNotFoundError(f"No timeseries_phaseB*.csv found in: {signals_dir}")
+    raise FileNotFoundError(f"No timeseries.csv found in: {signals_dir}")
 
 
 def _to_bool(x: Any) -> bool:
