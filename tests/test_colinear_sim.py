@@ -9,6 +9,7 @@ if str(_root / 'src') not in sys.path:
 from ths_zero.colinear_sim import (
     ColinearParams,
     ModeRequest,
+    PowerState,
     SimulationInput,
     SimulatorConfig,
     THSColinearSimulator,
@@ -29,7 +30,7 @@ def test_ev_forward_speed_constraints_and_signs() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=10.0,
-            wheel_torque_request_Nm=100.0,
+            ring_torque_request_Nm=100.0,
             mode_request=ModeRequest.EV,
             engine_on_flag=False,
             battery_soc=0.6,
@@ -48,7 +49,7 @@ def test_rear_constraint_equation() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=8.0,
-            wheel_torque_request_Nm=80.0,
+            ring_torque_request_Nm=80.0,
             mode_request=ModeRequest.HV,
             engine_on_flag=True,
             battery_soc=0.6,
@@ -64,7 +65,7 @@ def test_front_constraint_equation() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=5.0,
-            wheel_torque_request_Nm=40.0,
+            ring_torque_request_Nm=40.0,
             mode_request=ModeRequest.HV,
             engine_on_flag=True,
             battery_soc=0.5,
@@ -82,7 +83,7 @@ def test_standstill_charge_keeps_np_nm_zero_and_ng_positive() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=0.0,
-            wheel_torque_request_Nm=0.0,
+            ring_torque_request_Nm=0.0,
             mode_request=ModeRequest.CHARGE,
             engine_on_flag=True,
             battery_soc=0.4,
@@ -101,7 +102,7 @@ def test_power_balances_hold_with_losses() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=12.0,
-            wheel_torque_request_Nm=120.0,
+            ring_torque_request_Nm=120.0,
             mode_request=ModeRequest.ENGINE_GEN,
             engine_on_flag=True,
             battery_soc=0.6,
@@ -120,7 +121,7 @@ def test_regen_sign_pattern() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=9.0,
-            wheel_torque_request_Nm=-60.0,
+            ring_torque_request_Nm=-60.0,
             mode_request=ModeRequest.REGEN,
             engine_on_flag=False,
             battery_soc=0.7,
@@ -140,7 +141,7 @@ def test_engine_speed_target_zero_is_not_replaced_with_idle() -> None:
     out = sim.simulate(
         SimulationInput(
             vehicle_speed_mps=6.0,
-            wheel_torque_request_Nm=50.0,
+            ring_torque_request_Nm=50.0,
             mode_request=ModeRequest.HV,
             engine_on_flag=True,
             battery_soc=0.5,
@@ -149,3 +150,8 @@ def test_engine_speed_target_zero_is_not_replaced_with_idle() -> None:
         )
     )
     assert out.speeds.Ne == 0.0
+
+
+def test_mg1_generator_flow_uses_positive_pg_sign() -> None:
+    flows = THSColinearSimulator._energy_flows(PowerState(Pg=5.0, Pe=10.0, Pp=0.0, Pm=0.0, battery_power_W=5.0))
+    assert "engine -> MG1(generator)" in flows
