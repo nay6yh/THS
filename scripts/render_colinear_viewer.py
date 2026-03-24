@@ -177,44 +177,71 @@ def render_html(payload: dict[str, Any]) -> str:
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
 <title>THS Co-linear Viewer</title>
 <style>
-body{{font-family:Arial,sans-serif;margin:16px;color:#1f2937;background:#f8fafc;}}
-.panel{{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:12px;}}
-.row{{display:grid;grid-template-columns:1fr 320px;gap:12px;}}
-#snapshots button{{margin:4px;padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;}}
-#snapshots button.active{{background:#dbeafe;border-color:#60a5fa;}}
-.meta{{font-size:12px;color:#475569;line-height:1.5;}}
-svg{{width:100%;height:340px;background:#fff;}}
-canvas{{width:100%;height:220px;border:1px solid #e5e7eb;border-radius:6px;}}
-.badge{{display:inline-block;padding:2px 6px;border-radius:999px;font-size:11px;margin-right:4px;background:#e2e8f0;}}
+:root{{color-scheme:light;font-family:Arial,sans-serif;}}
+body{{margin:14px;color:#0f172a;background:#f8fafc;}}
+.viewer{{max-width:1280px;margin:0 auto;}}
+.panel{{background:#fff;border:1px solid #dbe2ea;border-radius:10px;padding:10px 12px;}}
+.status{{margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;align-items:baseline;}}
+.status-main{{font-size:16px;font-weight:700;line-height:1.3;}}
+.status-sub{{font-size:12px;color:#475569;text-align:right;}}
+.layout{{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:10px;align-items:stretch;}}
+.diagram-wrap{{padding:8px 10px 12px 10px;}}
+svg{{width:100%;height:500px;background:#fff;display:block;}}
+.support{{display:flex;flex-direction:column;gap:10px;}}
+.support h4{{font-size:13px;margin:0 0 6px 0;color:#334155;}}
+.meta{{font-size:12px;color:#475569;line-height:1.45;}}
+.badge{{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;margin:2px 4px 2px 0;background:#e2e8f0;color:#334155;}}
 .badge.alert{{background:#fee2e2;color:#991b1b;}}
 .badge.ok{{background:#dcfce7;color:#166534;}}
-.controls{{display:flex;gap:8px;align-items:center;}}
+.timeline{{margin-top:10px;display:grid;grid-template-rows:auto auto auto;gap:8px;}}
+canvas{{width:100%;height:96px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;}}
+.controls{{display:flex;gap:10px;align-items:center;}}
+.controls label{{font-size:12px;color:#334155;white-space:nowrap;}}
+.controls input[type="range"]{{flex:1;}}
+.button-strip{{display:flex;gap:6px;flex-wrap:wrap;}}
+.button-strip button{{padding:4px 8px;border:1px solid #cbd5e1;border-radius:999px;background:#f8fafc;cursor:pointer;font-size:11px;color:#334155;}}
+.button-strip button.active{{background:#dbeafe;border-color:#60a5fa;color:#1d4ed8;}}
+.button-strip button.event{{background:#f1f5f9;}}
+@media (max-width: 1024px) {{
+  .layout{{grid-template-columns:1fr;}}
+  .status{{flex-direction:column;align-items:flex-start;}}
+  .status-sub{{text-align:left;}}
+  svg{{height:440px;}}
+}}
 </style>
 </head>
 <body>
-<div class=\"panel\">
-  <h2 style=\"margin:0 0 8px 0\">Single-run Co-linear Viewer</h2>
-  <div id=\"summary\" class=\"meta\"></div>
-</div>
-<div class=\"panel\">
-  <h3 style=\"margin-top:0\">Time series</h3>
-  <canvas id=\"tsCanvas\" width=\"1000\" height=\"220\"></canvas>
-</div>
-<div class=\"panel controls\">
-  <label for=\"timeSlider\">Selected frame</label>
-  <input id=\"timeSlider\" type=\"range\" min=\"0\" step=\"1\" style=\"flex:1\" />
-  <div id=\"sliderReadout\" class=\"meta\"></div>
-</div>
-<div class=\"row\">
-  <div class=\"panel\">
-    <h3 style=\"margin-top:0\">Main co-linear diagram</h3>
-    <svg id=\"diag\" viewBox=\"0 0 800 340\"></svg>
+<div class=\"viewer\">
+  <div class=\"panel status\">
+    <div id=\"statusLine\" class=\"status-main\"></div>
+    <div id=\"summary\" class=\"status-sub\"></div>
   </div>
-  <div class=\"panel\">
-    <h3 style=\"margin-top:0\">Snapshots</h3>
-    <div id=\"snapshots\"></div>
-    <h3>Frame details</h3>
-    <div id=\"details\" class=\"meta\"></div>
+  <div class=\"layout\">
+    <div class=\"panel diagram-wrap\">
+      <svg id=\"diag\" viewBox=\"0 0 1000 500\"></svg>
+    </div>
+    <div class=\"support\">
+      <div class=\"panel\">
+        <h4>State badges</h4>
+        <div id=\"badges\"></div>
+      </div>
+      <div class=\"panel\">
+        <h4>Selected frame details</h4>
+        <div id=\"details\" class=\"meta\"></div>
+      </div>
+    </div>
+  </div>
+  <div class=\"timeline\">
+    <canvas id=\"tsCanvas\" width=\"1200\" height=\"96\"></canvas>
+    <div class=\"panel controls\">
+      <label for=\"timeSlider\">Frame</label>
+      <input id=\"timeSlider\" type=\"range\" min=\"0\" step=\"1\" />
+      <div id=\"sliderReadout\" class=\"meta\"></div>
+    </div>
+    <div class=\"panel\">
+      <div class=\"button-strip\" id=\"snapshots\"></div>
+      <div class=\"button-strip\" id=\"events\" style=\"margin-top:6px\"></div>
+    </div>
   </div>
 </div>
 <script id=\"viewer-data\" type=\"application/json\">{payload_json}</script>
@@ -222,13 +249,17 @@ canvas{{width:100%;height:220px;border:1px solid #e5e7eb;border-radius:6px;}}
 const data = JSON.parse(document.getElementById('viewer-data').textContent);
 const frames = data.frames || [];
 const snapshots = data.snapshots || [];
+const events = data.events || [];
 let selectedIndex = 0;
 
 const slider = document.getElementById('timeSlider');
 const readout = document.getElementById('sliderReadout');
 const details = document.getElementById('details');
+const badges = document.getElementById('badges');
 const summary = document.getElementById('summary');
+const statusLine = document.getElementById('statusLine');
 const snapshotsDiv = document.getElementById('snapshots');
+const eventsDiv = document.getElementById('events');
 const canvas = document.getElementById('tsCanvas');
 const ctx = canvas.getContext('2d');
 const svg = document.getElementById('diag');
@@ -243,7 +274,7 @@ function makeSnapshots(){{
   snapshotsDiv.innerHTML = '';
   snapshots.forEach((s) => {{
     const btn = document.createElement('button');
-    btn.textContent = `${{s.label}} @ ${{fmt(s.t_s,1)}} s`;
+    btn.textContent = `${{s.label}} · ${{fmt(s.t_s,1)}}s`;
     btn.title = s.reason;
     btn.onclick = () => setIndex(s.idx);
     btn.dataset.idx = String(s.idx);
@@ -251,11 +282,24 @@ function makeSnapshots(){{
   }});
 }}
 
+function makeEvents(){{
+  eventsDiv.innerHTML = '';
+  events.forEach((ev) => {{
+    const btn = document.createElement('button');
+    btn.className = 'event';
+    btn.textContent = `${{ev.value}} @ ${{fmt(ev.t_s,1)}}s`;
+    btn.title = 'Mode transition';
+    btn.onclick = () => setIndex(ev.idx);
+    btn.dataset.idx = String(ev.idx);
+    eventsDiv.appendChild(btn);
+  }});
+}}
+
 function drawTimeSeries(){{
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0,0,W,H);
   if (!frames.length) return;
-  const pad = {{l:50,r:16,t:12,b:26}};
+  const pad = {{l:40,r:14,t:10,b:20}};
   const xs = frames.map(f => f.time_s ?? f.idx);
   const ys = frames.map(f => f.vehicle_speed_kph ?? 0);
   const xmin = Math.min(...xs), xmax = Math.max(...xs);
@@ -263,8 +307,8 @@ function drawTimeSeries(){{
   const xpix = (x) => pad.l + (W - pad.l - pad.r) * ((x - xmin) / Math.max(1e-9, xmax - xmin));
   const ypix = (y) => H - pad.b - (H - pad.t - pad.b) * (y / ymax);
 
-  ctx.strokeStyle = '#111827';
-  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 1.25;
   ctx.beginPath();
   ys.forEach((y,i)=>{{
     const x = xpix(xs[i]), yp = ypix(y);
@@ -283,18 +327,21 @@ function drawTimeSeries(){{
   ctx.beginPath(); ctx.moveTo(sx,pad.t); ctx.lineTo(sx,H-pad.b); ctx.stroke();
 
   ctx.fillStyle = '#334155';
-  ctx.font = '12px Arial';
-  ctx.fillText('vehicle speed (km/h)', pad.l + 8, pad.t + 12);
+  ctx.font = '11px Arial';
+  ctx.fillText('Vehicle speed (km/h)', pad.l + 6, pad.t + 10);
 }}
 
 function drawDiag(frame){{
-  const W=800, H=340;
-  const centerY = H/2;
-  const xFront = [120, 280, 440];
-  const xRear = [120, 280, 440];
+  const W=1000, H=500;
+  const centerY = H*0.52;
+  const left = 120;
+  const spacing = 160;
+  const xFront = [left, left + spacing, left + spacing * 2];
+  const rearStart = left + spacing * 3;
+  const xRear = [rearStart, rearStart + spacing, rearStart + spacing * 2];
   const yVals = [frame.mg1_rpm ?? 0, frame.eng_rpm ?? 0, frame.ring_rpm ?? 0, frame.mg2_rpm ?? 0, 0];
   const maxAbs = Math.max(500, ...yVals.map(v => Math.abs(v)));
-  const yMap = (v) => centerY - (v / maxAbs) * 120;
+  const yMap = (v) => centerY - (v / maxAbs) * 170;
 
   const yNg = yMap(frame.mg1_rpm ?? 0);
   const yNe = yMap(frame.eng_rpm ?? 0);
@@ -303,43 +350,73 @@ function drawDiag(frame){{
   const y0 = yMap(0);
 
   svg.innerHTML = `
-    <line x1="50" y1="${{centerY}}" x2="760" y2="${{centerY}}" stroke="#cbd5e1" stroke-width="1" />
-    <line x1="${{xFront[0]}}" y1="${{yNg}}" x2="${{xFront[2]}}" y2="${{yNp}}" stroke="#2563eb" stroke-width="2" />
-    <line x1="${{xRear[0]+280}}" y1="${{yNp}}" x2="${{xRear[2]+280}}" y2="${{yNm}}" stroke="#16a34a" stroke-width="2" />
-    <circle cx="${{xFront[0]}}" cy="${{yNg}}" r="6" fill="#2563eb" />
-    <circle cx="${{xFront[1]}}" cy="${{yNe}}" r="6" fill="#ef4444" />
-    <circle cx="${{xFront[2]}}" cy="${{yNp}}" r="6" fill="#2563eb" />
-    <circle cx="${{xRear[0]+280}}" cy="${{yNp}}" r="6" fill="#16a34a" />
-    <circle cx="${{xRear[1]+280}}" cy="${{y0}}" r="6" fill="#64748b" />
-    <circle cx="${{xRear[2]+280}}" cy="${{yNm}}" r="6" fill="#16a34a" />
-    <text x="${{xFront[0]-16}}" y="24" font-size="12">Ng (MG1)</text>
-    <text x="${{xFront[1]-16}}" y="24" font-size="12">Ne (ENG)</text>
-    <text x="${{xFront[2]-16}}" y="24" font-size="12">Np (Ring)</text>
-    <text x="${{xRear[0]+265}}" y="24" font-size="12">Np</text>
-    <text x="${{xRear[1]+265}}" y="24" font-size="12">0</text>
-    <text x="${{xRear[2]+265}}" y="24" font-size="12">Nm (MG2)</text>
-    <text x="100" y="320" font-size="12" fill="#1e293b">Front planetary concept: Ng-Ne-Np</text>
-    <text x="430" y="320" font-size="12" fill="#1e293b">Rear planetary concept: Np-0-Nm</text>
+    <line x1="60" y1="${{centerY}}" x2="940" y2="${{centerY}}" stroke="#d1d5db" stroke-width="1.5" />
+    <line x1="${{xFront[0]}}" y1="${{yNg}}" x2="${{xFront[2]}}" y2="${{yNp}}" stroke="#2563eb" stroke-width="3.5" />
+    <line x1="${{xRear[0]}}" y1="${{yNp}}" x2="${{xRear[2]}}" y2="${{yNm}}" stroke="#16a34a" stroke-width="3.5" />
+
+    <line x1="${{xFront[0]}}" y1="${{centerY + 70}}" x2="${{xFront[2]}}" y2="${{centerY + 70}}" stroke="#93c5fd" stroke-width="2" stroke-dasharray="5 4" />
+    <line x1="${{xRear[0]}}" y1="${{centerY + 70}}" x2="${{xRear[2]}}" y2="${{centerY + 70}}" stroke="#86efac" stroke-width="2" stroke-dasharray="5 4" />
+    <circle cx="${{xFront[0]}}" cy="${{yNg}}" r="8" fill="#2563eb" />
+    <circle cx="${{xFront[1]}}" cy="${{yNe}}" r="8" fill="#ef4444" />
+    <circle cx="${{xFront[2]}}" cy="${{yNp}}" r="8" fill="#2563eb" />
+    <circle cx="${{xRear[0]}}" cy="${{yNp}}" r="8" fill="#16a34a" />
+    <circle cx="${{xRear[1]}}" cy="${{y0}}" r="10" fill="#0f766e" />
+    <circle cx="${{xRear[2]}}" cy="${{yNm}}" r="8" fill="#16a34a" />
+
+    <text x="${{xFront[0]-30}}" y="${{centerY - 205}}" font-size="13" fill="#1e40af">Ng (MG1)</text>
+    <text x="${{xFront[1]-30}}" y="${{centerY - 205}}" font-size="13" fill="#991b1b">Ne (Engine)</text>
+    <text x="${{xFront[2]-30}}" y="${{centerY - 205}}" font-size="13" fill="#1e40af">Np (Ring)</text>
+    <text x="${{xRear[0]-16}}" y="${{centerY - 205}}" font-size="13" fill="#166534">Np</text>
+    <text x="${{xRear[1]-46}}" y="${{centerY - 205}}" font-size="13" fill="#115e59">Rear carrier fixed (0)</text>
+    <text x="${{xRear[2]-25}}" y="${{centerY - 205}}" font-size="13" fill="#166534">Nm (MG2)</text>
+
+    <text x="${{xFront[0] - 20}}" y="${{centerY + 94}}" font-size="13" fill="#1e3a8a">Front planetary concept: Ng - Ne - Np</text>
+    <text x="${{xRear[0] - 20}}" y="${{centerY + 94}}" font-size="13" fill="#14532d">Rear planetary concept: Np - fixed(0) - Nm</text>
+
+    <text x="64" y="34" font-size="12" fill="#334155">raw speed markers (circles) over concept lines</text>
+    <text x="64" y="${{H - 22}}" font-size="12" fill="#475569">RPM scale ±${{Math.round(maxAbs)}}</text>
   `;
+}}
+
+function classifyAction(frame){{
+  const speed = frame.vehicle_speed_kph ?? 0;
+  const engOn = !!frame.engine_on;
+  const regen = !!frame.regen_active;
+  const battW = frame.P_batt_chem_W ?? 0;
+  const engTq = frame.eng_tq_Nm ?? 0;
+  const mg2Tq = frame.mg2_tq_Nm ?? 0;
+  const mg1rpm = Math.abs(frame.mg1_rpm ?? 0);
+
+  if (regen && !engOn) return ['Regen decel', 'Engine stopped, rear carrier fixed, MG2 charging battery'];
+  if (regen && engOn && Math.abs(engTq) < 10) return ['Regen with engine spin', 'Vehicle decelerating while engine spins with low fuel torque'];
+  if (!engOn && speed > 1 && mg2Tq > 2) return ['EV drive', 'Engine stopped, MG2 propels vehicle and front planetary balances speed'];
+  if (engOn && battW < -50) return ['Engine charging', 'Engine running and electrical path net-charging battery'];
+  if (engOn && mg2Tq > 2 && engTq > 10) return ['Hybrid drive', 'Engine and MG2 both contribute wheel-side torque'];
+  if (engOn && Math.abs(mg2Tq) <= 2 && speed > 1) return ['Engine drive only', 'Engine dominates propulsion while electric wheel torque is near zero'];
+  if (!engOn && speed <= 1 && mg1rpm < 50) return ['Idle/stop', 'Vehicle near standstill with engine off and low machine speeds'];
+  return ['Transition', `System transitioning (mode=${{frame.mode || '-'}})`];
 }}
 
 function render(){{
   if (!frames.length) return;
   const f = frames[selectedIndex];
-  readout.textContent = `idx=${{selectedIndex}} / ${{frames.length-1}}, t=${{fmt(f.time_s,2)}} s`;
+  const [action, explanation] = classifyAction(f);
+  statusLine.textContent = `${{fmt(f.time_s,1)}} s | ${{action}} | ${{explanation}}`;
+  readout.textContent = `idx=${{selectedIndex}} / ${{frames.length-1}} · t=${{fmt(f.time_s,2)}} s`;
   drawTimeSeries();
   drawDiag(f);
 
-  const badges = [
+  const badgeHtml = [
+    `<span class="badge">${{action}}</span>`,
     `<span class="badge ${{f.engine_on ? 'ok' : ''}}">engine_on:${{f.engine_on}}</span>`,
     `<span class="badge">fuel_cut:${{f.fuel_cut}}</span>`,
     `<span class="badge ${{f.regen_active ? 'ok' : ''}}">regen:${{f.regen_active}}</span>`,
     f.flag_shortfall ? '<span class="badge alert">shortfall</span>' : '',
     (f.flag_eng_sat||f.flag_mg1_sat||f.flag_mg2_sat||f.flag_batt_sat) ? '<span class="badge alert">saturation</span>' : ''
   ].join(' ');
+  badges.innerHTML = badgeHtml;
 
   details.innerHTML = `
-    ${{badges}}<br/>
     mode=${{f.mode}}<br/>
     speed=${{fmt(f.vehicle_speed_kph,1)}} km/h · soc=${{fmt(f.soc_pct,2)}} %<br/>
     RPM: eng=${{fmt(f.eng_rpm,0)}}, mg1=${{fmt(f.mg1_rpm,0)}}, ring=${{fmt(f.ring_rpm,0)}}, mg2=${{fmt(f.mg2_rpm,0)}}<br/>
@@ -347,7 +424,7 @@ function render(){{
     P_batt_chem=${{fmt(f.P_batt_chem_W,0)}} W
   `;
 
-  [...snapshotsDiv.querySelectorAll('button')].forEach((b)=>{{
+  [...snapshotsDiv.querySelectorAll('button'), ...eventsDiv.querySelectorAll('button')].forEach((b)=>{{
     b.classList.toggle('active', Number(b.dataset.idx) === selectedIndex);
   }});
 }}
@@ -360,6 +437,7 @@ function setIndex(i){{
 
 header();
 makeSnapshots();
+makeEvents();
 slider.max = String(Math.max(0, frames.length - 1));
 slider.value = '0';
 slider.oninput = (e) => setIndex(e.target.value);
