@@ -138,6 +138,22 @@ class TestAuditB(unittest.TestCase):
         self.assertEqual(len(resid), len(ts))
         self.assertTrue(np.all(np.abs(resid.to_numpy()) < 1e-9))
 
+    def test_soc_recon_residual_nonzero_emin_absolute_frame_regression(self):
+        ts = self._make_ts()
+        ts["batt_Emin_Wh"] = [100.0, 100.0, 100.0]
+        ts["batt_E_usable_Wh"] = [900.0, 900.0, 900.0]
+        ts["soc_pct"] = 100.0 * (ts["E_batt_Wh"] / ts["batt_E_usable_Wh"])
+
+        resid = compute_soc_reconstruction_residual_B(ts)
+        self.assertTrue(np.all(np.abs(resid.to_numpy()) < 1e-9))
+
+        # Regression intent: old relative-SOC formula used a different frame contract:
+        # soc_old = 100 * ((E - Emin) / E_usable), while simulator soc_pct is absolute.
+        old_soc_rec = 100.0 * ((ts["E_batt_Wh"] - ts["batt_Emin_Wh"]) / ts["batt_E_usable_Wh"])
+        old_resid = old_soc_rec - ts["soc_pct"]
+        old_resid.iloc[0] = 0.0  # same k=0 convention as the audit residual
+        self.assertGreater(np.max(np.abs(old_resid.iloc[1:].to_numpy())), 1.0)
+
     def test_compute_audit_outputs(self):
         ts = self._make_ts()
         cons = pd.DataFrame({"t_s": ts["t_s"]})

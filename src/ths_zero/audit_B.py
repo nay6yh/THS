@@ -44,8 +44,8 @@ def compute_soc_reconstruction_residual_B(ts: pd.DataFrame) -> pd.Series:
     Discrete update (matches sim_grid_B chemical update):
         E_end[k] = clip(E_end[k-1] - P_chem[k] * dt[k] / 3600, [Emin[k], Emax[k]])   for k>=1
 
-    Units:
-      - soc_pct is in percent [0..100].
+    SOC/residual definition:
+      - soc_pct uses absolute SOC percent [0..100]: soc_pct = 100 * (E / E_usable)
       - residual is in percent points.
 
     Required columns:
@@ -94,8 +94,8 @@ def compute_soc_reconstruction_residual_B(ts: pd.DataFrame) -> pd.Series:
 
         E_rec[k] = E_next
 
-    # SOC definition (your test data shows Emin=0 so either formula matches here)
-    soc_rec = 100.0 * ((E_rec - Emin) / np.maximum(E_usable, _EPS))
+    # Keep SOC reconstruction aligned with sim_grid_B soc_pct definition.
+    soc_rec = 100.0 * (E_rec / np.maximum(E_usable, _EPS))
     resid = soc_rec - soc_rep
 
     # frozen semantics: residual at k=0 defined as 0
