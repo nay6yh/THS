@@ -114,14 +114,15 @@ def _build_snapshots(df: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 def build_viewer_payload(run_dir: Path, ts: pd.DataFrame) -> dict[str, Any]:
-    run_dir = run_dir.resolve()
-    manifest_path = run_dir / "manifest.json"
+    run_dir_abs = run_dir.resolve()
+    manifest_path = run_dir_abs / "manifest.json"
     manifest = {}
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
     frames: list[dict[str, Any]] = []
     for i, row in ts.iterrows():
+        veh_spd_mps = _to_num(row.get("veh_spd_mps"))
         frame = {
             "idx": int(i),
             "time_s": _to_num(row.get("t_s")),
@@ -129,7 +130,7 @@ def build_viewer_payload(run_dir: Path, ts: pd.DataFrame) -> dict[str, Any]:
             "engine_on": _to_bool(row.get("eng_rpm", 0.0) > 1.0),
             "fuel_cut": _to_bool(row.get("fuel_cut", False)),
             "regen_active": _to_bool((row.get("P_batt_chem_W", 0.0) or 0.0) < -1.0),
-            "vehicle_speed_kph": _to_num((row.get("veh_spd_mps", np.nan) or np.nan) * 3.6),
+            "vehicle_speed_kph": (veh_spd_mps * 3.6) if veh_spd_mps is not None else None,
             "soc_pct": _to_num(row.get("soc_pct")),
             "eng_rpm": _to_num(row.get("eng_rpm")),
             "mg1_rpm": _to_num(row.get("mg1_rpm")),
@@ -153,8 +154,8 @@ def build_viewer_payload(run_dir: Path, ts: pd.DataFrame) -> dict[str, Any]:
 
     return {
         "meta": {
-            "run_dir": str(run_dir),
-            "run_id": manifest.get("run_id", run_dir.name),
+            "run_dir": run_dir_abs.name,
+            "run_id": manifest.get("run_id", run_dir_abs.name),
             "source_timeseries": manifest.get("files", {}).get("timeseries", ""),
         },
         "summary": {
@@ -301,18 +302,29 @@ function drawTimeSeries(){{
   if (!frames.length) return;
   const pad = {{l:40,r:14,t:10,b:20}};
   const xs = frames.map(f => f.time_s ?? f.idx);
-  const ys = frames.map(f => f.vehicle_speed_kph ?? 0);
+  const ys = frames.map(f => f.vehicle_speed_kph);
+  const validYs = ys.filter((y) => Number.isFinite(y));
   const xmin = Math.min(...xs), xmax = Math.max(...xs);
-  const ymax = Math.max(1, ...ys);
+  const ymax = Math.max(1, ...(validYs.length ? validYs : [0]));
   const xpix = (x) => pad.l + (W - pad.l - pad.r) * ((x - xmin) / Math.max(1e-9, xmax - xmin));
   const ypix = (y) => H - pad.b - (H - pad.t - pad.b) * (y / ymax);
 
   ctx.strokeStyle = '#0f172a';
   ctx.lineWidth = 1.25;
   ctx.beginPath();
+  let started = false;
   ys.forEach((y,i)=>{{
+    if (!Number.isFinite(y)) {{
+      started = false;
+      return;
+    }}
     const x = xpix(xs[i]), yp = ypix(y);
-    if (i===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
+    if (!started) {{
+      ctx.moveTo(x,yp);
+      started = true;
+    }} else {{
+      ctx.lineTo(x,yp);
+    }}
   }});
   ctx.stroke();
 
@@ -334,7 +346,7 @@ function drawTimeSeries(){{
 function drawDiag(frame){{
   const W=1000, H=500;
   const centerY = H*0.52;
-  const left = 120;
+  const left = 110;
   const spacing = 160;
   const xFront = [left, left + spacing, left + spacing * 2];
   const rearStart = left + spacing * 3;
@@ -351,17 +363,19 @@ function drawDiag(frame){{
 
   svg.innerHTML = `
     <line x1="60" y1="${{centerY}}" x2="940" y2="${{centerY}}" stroke="#d1d5db" stroke-width="1.5" />
-    <line x1="${{xFront[0]}}" y1="${{yNg}}" x2="${{xFront[2]}}" y2="${{yNp}}" stroke="#2563eb" stroke-width="3.5" />
-    <line x1="${{xRear[0]}}" y1="${{yNp}}" x2="${{xRear[2]}}" y2="${{yNm}}" stroke="#16a34a" stroke-width="3.5" />
+    <polyline points="${{xFront[0]}},${{yNg}} ${{xFront[1]}},${{yNe}} ${{xFront[2]}},${{yNp}}" fill="none" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <polyline points="${{xRear[0]}},${{yNp}} ${{xRear[1]}},${{y0}} ${{xRear[2]}},${{yNm}}" fill="none" stroke="#15803d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
 
-    <line x1="${{xFront[0]}}" y1="${{centerY + 70}}" x2="${{xFront[2]}}" y2="${{centerY + 70}}" stroke="#93c5fd" stroke-width="2" stroke-dasharray="5 4" />
-    <line x1="${{xRear[0]}}" y1="${{centerY + 70}}" x2="${{xRear[2]}}" y2="${{centerY + 70}}" stroke="#86efac" stroke-width="2" stroke-dasharray="5 4" />
-    <circle cx="${{xFront[0]}}" cy="${{yNg}}" r="8" fill="#2563eb" />
-    <circle cx="${{xFront[1]}}" cy="${{yNe}}" r="8" fill="#ef4444" />
-    <circle cx="${{xFront[2]}}" cy="${{yNp}}" r="8" fill="#2563eb" />
-    <circle cx="${{xRear[0]}}" cy="${{yNp}}" r="8" fill="#16a34a" />
-    <circle cx="${{xRear[1]}}" cy="${{y0}}" r="10" fill="#0f766e" />
-    <circle cx="${{xRear[2]}}" cy="${{yNm}}" r="8" fill="#16a34a" />
+    <line x1="${{xFront[0]}}" y1="${{centerY + 70}}" x2="${{xFront[2]}}" y2="${{centerY + 70}}" stroke="#bfdbfe" stroke-width="1.5" stroke-dasharray="5 4" />
+    <line x1="${{xRear[0]}}" y1="${{centerY + 70}}" x2="${{xRear[2]}}" y2="${{centerY + 70}}" stroke="#bbf7d0" stroke-width="1.5" stroke-dasharray="5 4" />
+    <circle cx="${{xFront[0]}}" cy="${{yNg}}" r="5.5" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1.5" />
+    <circle cx="${{xFront[1]}}" cy="${{yNe}}" r="6" fill="#fca5a5" stroke="#b91c1c" stroke-width="1.5" />
+    <circle cx="${{xFront[2]}}" cy="${{yNp}}" r="5.5" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1.5" />
+    <circle cx="${{xRear[0]}}" cy="${{yNp}}" r="5.5" fill="#86efac" stroke="#15803d" stroke-width="1.5" />
+    <circle cx="${{xRear[1]}}" cy="${{y0}}" r="17" fill="#0f766e" fill-opacity="0.15" />
+    <circle cx="${{xRear[1]}}" cy="${{y0}}" r="9.5" fill="#0f766e" stroke="#134e4a" stroke-width="2" />
+    <circle cx="${{xRear[2]}}" cy="${{yNm}}" r="5.5" fill="#86efac" stroke="#15803d" stroke-width="1.5" />
+    <line x1="${{xRear[1]}}" y1="${{y0 - 24}}" x2="${{xRear[1]}}" y2="${{y0 + 24}}" stroke="#0f766e" stroke-width="2" stroke-opacity="0.55" />
 
     <text x="${{xFront[0]-30}}" y="${{centerY - 205}}" font-size="13" fill="#1e40af">Ng (MG1)</text>
     <text x="${{xFront[1]-30}}" y="${{centerY - 205}}" font-size="13" fill="#991b1b">Ne (Engine)</text>
@@ -373,7 +387,7 @@ function drawDiag(frame){{
     <text x="${{xFront[0] - 20}}" y="${{centerY + 94}}" font-size="13" fill="#1e3a8a">Front planetary concept: Ng - Ne - Np</text>
     <text x="${{xRear[0] - 20}}" y="${{centerY + 94}}" font-size="13" fill="#14532d">Rear planetary concept: Np - fixed(0) - Nm</text>
 
-    <text x="64" y="34" font-size="12" fill="#334155">raw speed markers (circles) over concept lines</text>
+    <text x="64" y="34" font-size="12" fill="#334155">concept lines are primary; circles are supporting raw points</text>
     <text x="64" y="${{H - 22}}" font-size="12" fill="#475569">RPM scale ±${{Math.round(maxAbs)}}</text>
   `;
 }}
