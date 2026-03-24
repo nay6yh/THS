@@ -83,8 +83,8 @@ def compute_soc_reconstruction_residual_B(ts: pd.DataFrame) -> pd.Series:
     E_rec[0] = E_rep[0]
 
     for k in range(1, len(E_rec)):
-        # use previous row's power to get current end-of-step
-        E_next = E_rec[k - 1] - (Pchem[k - 1] * dt[k - 1] / 3600.0)
+        # use current row power/time to get current end-of-step from previous end-of-step
+        E_next = E_rec[k - 1] - (Pchem[k] * dt[k] / 3600.0)
 
         # clip using current step limits (k) is fine; or k-1 if you log those as start-of-step
         if np.isfinite(Emin[k]):
