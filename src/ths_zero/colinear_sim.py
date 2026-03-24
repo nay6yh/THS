@@ -54,8 +54,16 @@ class SimulatorConfig:
 
 @dataclass(frozen=True)
 class SimulationInput:
+    """Inputs for one colinear-simulator step.
+
+    Notes:
+        `battery_soc` and `battery_power_limit_W` are accepted for interface
+        compatibility with richer simulators, but are intentionally unused in
+        this educational kinematic/power-balance model.
+    """
+
     vehicle_speed_mps: float
-    wheel_torque_request_Nm: float
+    ring_torque_request_Nm: float
     mode_request: ModeRequest
     engine_on_flag: bool
     battery_soc: float
@@ -161,7 +169,7 @@ class THSColinearSimulator:
         This is intentionally not unique; it is a tunable policy layer.
         """
 
-        Tp = x.wheel_torque_request_Nm
+        Tp = x.ring_torque_request_Nm
 
         if x.mode_request == ModeRequest.EV:
             return TorqueState(Tg=5.0, Te=0.0, Tp=Tp, Tm=-abs(Tp))
@@ -221,7 +229,7 @@ class THSColinearSimulator:
         flows: List[str] = []
         if p.Pe > 0 and p.Pp > 0:
             flows.append("engine -> wheel")
-        if p.Pe > 0 and p.Pg < 0:
+        if p.Pe > 0 and p.Pg > 0:
             flows.append("engine -> MG1(generator)")
         if p.Pm > 0:
             flows.append("wheel -> MG2 -> battery")
