@@ -348,44 +348,46 @@ function drawDiag(frame){{
   const centerY = H*0.52;
   const left = 110;
   const spacing = 160;
-  const xFront = [left, left + spacing, left + spacing * 2];
-  const rearStart = left + spacing * 3;
-  const xRear = [rearStart, rearStart + spacing, rearStart + spacing * 2];
-  const yVals = [frame.mg1_rpm ?? 0, frame.eng_rpm ?? 0, frame.ring_rpm ?? 0, frame.mg2_rpm ?? 0, 0];
+  const xNg = left;
+  const xNe = left + spacing;
+  const xNpShared = left + spacing * 2;
+  const xFixed0 = left + spacing * 3;
+  const xNm = left + spacing * 4;
+  const absMg2 = Math.abs(frame.mg2_rpm ?? 0);
+  const nmSigned = -absMg2;
+  const yVals = [frame.mg1_rpm ?? 0, frame.eng_rpm ?? 0, frame.ring_rpm ?? 0, nmSigned, 0];
   const maxAbs = Math.max(500, ...yVals.map(v => Math.abs(v)));
   const yMap = (v) => centerY - (v / maxAbs) * 170;
 
   const yNg = yMap(frame.mg1_rpm ?? 0);
   const yNe = yMap(frame.eng_rpm ?? 0);
-  const yNp = yMap(frame.ring_rpm ?? 0);
-  const yNm = yMap(frame.mg2_rpm ?? 0);
+  const yNpShared = yMap(frame.ring_rpm ?? 0);
+  const yNm = yMap(nmSigned);
   const y0 = yMap(0);
 
   svg.innerHTML = `
     <line x1="60" y1="${{centerY}}" x2="940" y2="${{centerY}}" stroke="#d1d5db" stroke-width="1.5" />
-    <polyline points="${{xFront[0]}},${{yNg}} ${{xFront[1]}},${{yNe}} ${{xFront[2]}},${{yNp}}" fill="none" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-    <polyline points="${{xRear[0]}},${{yNp}} ${{xRear[1]}},${{y0}} ${{xRear[2]}},${{yNm}}" fill="none" stroke="#15803d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <polyline points="${{xNg}},${{yNg}} ${{xNe}},${{yNe}} ${{xNpShared}},${{yNpShared}}" fill="none" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <polyline points="${{xNpShared}},${{yNpShared}} ${{xFixed0}},${{y0}} ${{xNm}},${{yNm}}" fill="none" stroke="#15803d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
 
-    <line x1="${{xFront[0]}}" y1="${{centerY + 70}}" x2="${{xFront[2]}}" y2="${{centerY + 70}}" stroke="#bfdbfe" stroke-width="1.5" stroke-dasharray="5 4" />
-    <line x1="${{xRear[0]}}" y1="${{centerY + 70}}" x2="${{xRear[2]}}" y2="${{centerY + 70}}" stroke="#bbf7d0" stroke-width="1.5" stroke-dasharray="5 4" />
-    <circle cx="${{xFront[0]}}" cy="${{yNg}}" r="5.5" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1.5" />
-    <circle cx="${{xFront[1]}}" cy="${{yNe}}" r="6" fill="#fca5a5" stroke="#b91c1c" stroke-width="1.5" />
-    <circle cx="${{xFront[2]}}" cy="${{yNp}}" r="5.5" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1.5" />
-    <circle cx="${{xRear[0]}}" cy="${{yNp}}" r="5.5" fill="#86efac" stroke="#15803d" stroke-width="1.5" />
-    <circle cx="${{xRear[1]}}" cy="${{y0}}" r="17" fill="#0f766e" fill-opacity="0.15" />
-    <circle cx="${{xRear[1]}}" cy="${{y0}}" r="9.5" fill="#0f766e" stroke="#134e4a" stroke-width="2" />
-    <circle cx="${{xRear[2]}}" cy="${{yNm}}" r="5.5" fill="#86efac" stroke="#15803d" stroke-width="1.5" />
-    <line x1="${{xRear[1]}}" y1="${{y0 - 24}}" x2="${{xRear[1]}}" y2="${{y0 + 24}}" stroke="#0f766e" stroke-width="2" stroke-opacity="0.55" />
+    <line x1="${{xNg}}" y1="${{centerY + 70}}" x2="${{xNpShared}}" y2="${{centerY + 70}}" stroke="#bfdbfe" stroke-width="1.5" stroke-dasharray="5 4" />
+    <line x1="${{xNpShared}}" y1="${{centerY + 70}}" x2="${{xNm}}" y2="${{centerY + 70}}" stroke="#bbf7d0" stroke-width="1.5" stroke-dasharray="5 4" />
+    <circle cx="${{xNg}}" cy="${{yNg}}" r="5.5" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1.5" />
+    <circle cx="${{xNe}}" cy="${{yNe}}" r="6" fill="#fca5a5" stroke="#b91c1c" stroke-width="1.5" />
+    <circle cx="${{xNpShared}}" cy="${{yNpShared}}" r="8.5" fill="#fef08a" stroke="#854d0e" stroke-width="2" />
+    <circle cx="${{xFixed0}}" cy="${{y0}}" r="17" fill="#0f766e" fill-opacity="0.15" />
+    <circle cx="${{xFixed0}}" cy="${{y0}}" r="9.5" fill="#0f766e" stroke="#134e4a" stroke-width="2" />
+    <circle cx="${{xNm}}" cy="${{yNm}}" r="5.5" fill="#86efac" stroke="#15803d" stroke-width="1.5" />
+    <line x1="${{xFixed0}}" y1="${{y0 - 24}}" x2="${{xFixed0}}" y2="${{y0 + 24}}" stroke="#0f766e" stroke-width="2" stroke-opacity="0.55" />
 
-    <text x="${{xFront[0]-30}}" y="${{centerY - 205}}" font-size="13" fill="#1e40af">Ng (MG1)</text>
-    <text x="${{xFront[1]-30}}" y="${{centerY - 205}}" font-size="13" fill="#991b1b">Ne (Engine)</text>
-    <text x="${{xFront[2]-30}}" y="${{centerY - 205}}" font-size="13" fill="#1e40af">Np (Ring)</text>
-    <text x="${{xRear[0]-16}}" y="${{centerY - 205}}" font-size="13" fill="#166534">Np</text>
-    <text x="${{xRear[1]-46}}" y="${{centerY - 205}}" font-size="13" fill="#115e59">Rear carrier fixed (0)</text>
-    <text x="${{xRear[2]-25}}" y="${{centerY - 205}}" font-size="13" fill="#166534">Nm (MG2)</text>
+    <text x="${{xNg-30}}" y="${{centerY - 205}}" font-size="13" fill="#1e40af">Ng (MG1)</text>
+    <text x="${{xNe-30}}" y="${{centerY - 205}}" font-size="13" fill="#991b1b">Ne (Engine)</text>
+    <text x="${{xNpShared-12}}" y="${{centerY - 205}}" font-size="13" fill="#854d0e">Np</text>
+    <text x="${{xFixed0-46}}" y="${{centerY - 205}}" font-size="13" fill="#115e59">Rear carrier fixed (0)</text>
+    <text x="${{xNm-35}}" y="${{centerY - 205}}" font-size="13" fill="#166534">Nm (MG2, negative)</text>
 
-    <text x="${{xFront[0] - 20}}" y="${{centerY + 94}}" font-size="13" fill="#1e3a8a">Front planetary concept: Ng - Ne - Np</text>
-    <text x="${{xRear[0] - 20}}" y="${{centerY + 94}}" font-size="13" fill="#14532d">Rear planetary concept: Np - fixed(0) - Nm</text>
+    <text x="${{xNg - 20}}" y="${{centerY + 94}}" font-size="13" fill="#1e3a8a">Front planetary concept: Ng - Ne - Np</text>
+    <text x="${{xNpShared - 20}}" y="${{centerY + 94}}" font-size="13" fill="#14532d">Rear planetary concept: Np - fixed(0) - Nm</text>
 
     <text x="64" y="34" font-size="12" fill="#334155">concept lines are primary; circles are supporting raw points</text>
     <text x="64" y="${{H - 22}}" font-size="12" fill="#475569">RPM scale ±${{Math.round(maxAbs)}}</text>
@@ -433,7 +435,7 @@ function render(){{
   details.innerHTML = `
     mode=${{f.mode}}<br/>
     speed=${{fmt(f.vehicle_speed_kph,1)}} km/h · soc=${{fmt(f.soc_pct,2)}} %<br/>
-    RPM: eng=${{fmt(f.eng_rpm,0)}}, mg1=${{fmt(f.mg1_rpm,0)}}, ring=${{fmt(f.ring_rpm,0)}}, mg2=${{fmt(f.mg2_rpm,0)}}<br/>
+    RPM: eng=${{fmt(f.eng_rpm,0)}}, mg1=${{fmt(f.mg1_rpm,0)}}, ring=${{fmt(f.ring_rpm,0)}}, mg2=${{fmt(-(Math.abs(f.mg2_rpm ?? 0)),0)}}<br/>
     Torque (Nm): eng=${{fmt(f.eng_tq_Nm,1)}}, mg1=${{fmt(f.mg1_tq_Nm,1)}}, ring=${{fmt(f.T_ring_deliv_Nm,1)}}, mg2=${{fmt(f.mg2_tq_Nm,1)}}<br/>
     P_batt_chem=${{fmt(f.P_batt_chem_W,0)}} W
   `;
