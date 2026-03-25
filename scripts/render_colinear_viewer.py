@@ -613,7 +613,9 @@ function drawDiag(frame){{
   const scaleY = 170 / axisMax;
   const yMap = (v) => centerY - v * scaleY;
   const yNg = yMap(Ng), yNe = yMap(Ne), yNp = yMap(Np), yNm = yMap(NmDisplay), y0 = centerY;
-  const Tg = frame.mg1_tq_Nm ?? 0, Te = frame.eng_tq_Nm ?? 0, Tp = frame.T_ring_deliv_Nm ?? 0, Tm = frame.mg2_tq_Nm ?? 0;
+  const Tg = frame.mg1_tq_Nm ?? 0, Te = frame.eng_tq_Nm ?? 0, Tp = frame.T_ring_deliv_Nm ?? 0;
+  const TmRaw = frame.mg2_tq_Nm ?? 0;
+  const TmDisplay = -TmRaw;
   const tqScalePx = 52 / torqueAxisMax;
   const resFront = rho * Ng - (1 + rho) * Ne + Np;
   const resRear = NmDisplay + grm * Np;
@@ -665,7 +667,7 @@ function drawDiag(frame){{
     ${{torqueArrowSvg(frontX.xNg, y0, Tg, tqScalePx, 'Tg')}}
     ${{torqueArrowSvg(frontX.xNe, y0, Te, tqScalePx, 'Te')}}
     ${{torqueArrowSvg(frontX.xNp, y0, Tp, tqScalePx, 'Tp')}}
-    ${{torqueArrowSvg(rearX.xNm, y0, Tm, tqScalePx, 'Tm')}}
+    ${{torqueArrowSvg(rearX.xNm, y0, TmDisplay, tqScalePx, 'Tm')}}
 
     <text x="${{frontX.xNg-30}}" y="40" font-size="13" fill="#1e40af">Ng (MG1)</text>
     <text x="${{frontX.xNe-30}}" y="40" font-size="13" fill="#991b1b">Ne (Engine)</text>
